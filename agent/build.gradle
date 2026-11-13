@@ -1,0 +1,16 @@
+dependencies {
+    // Fabric 会拒绝类路径中重复的 ASM；启动后的探针复用 Loader 提供的版本。
+    compileOnly 'org.ow2.asm:asm:9.10.1'
+    compileOnly 'org.ow2.asm:asm-tree:9.10.1'
+    testImplementation 'org.ow2.asm:asm:9.10.1'
+    testImplementation 'org.ow2.asm:asm-tree:9.10.1'
+}
+
+tasks.named('jar', Jar) {
+    archiveBaseName = 'fabric-hotload-agent'
+    manifest {
+        attributes 'Premain-Class': 'dev.fabric.hotload.agent.HotloadAgent',
+                'Can-Redefine-Classes': 'true',
+                'Can-Retransform-Classes': 'true'
+    }
+}

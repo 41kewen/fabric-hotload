@@ -1,0 +1,1 @@
+// API 仅依赖 JDK，受管模块不需要链接 Minecraft。

@@ -1,0 +1,10 @@
+pluginManagement {
+    repositories {
+        maven { url = 'https://maven.fabricmc.net/' }
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'fabric-hotload'
+include 'module-api', 'core', 'agent', 'fabric-host', 'probe-mod', 'demo-v1', 'demo-v2'

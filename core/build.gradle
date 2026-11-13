@@ -1,0 +1,10 @@
+dependencies {
+    api project(':module-api')
+    implementation 'com.google.code.gson:gson:2.13.2'
+}
+
+tasks.named('test') {
+    dependsOn ':demo-v1:jar', ':demo-v2:jar'
+    systemProperty 'demo.v1', project(':demo-v1').tasks.named('jar').get().archiveFile.get().asFile.absolutePath
+    systemProperty 'demo.v2', project(':demo-v2').tasks.named('jar').get().archiveFile.get().asFile.absolutePath
+}

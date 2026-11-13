@@ -1,0 +1,53 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version '1.19.4' apply false
+}
+
+allprojects {
+    group = 'dev.fabric.hotload'
+    version = '0.1.0-p0'
+    repositories {
+        mavenCentral()
+        maven { url = 'https://maven.fabricmc.net/' }
+    }
+}
+
+subprojects {
+    apply plugin: 'java-library'
+    java {
+        toolchain.languageVersion = JavaLanguageVersion.of(25)
+        withSourcesJar()
+    }
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.release = 25
+        options.compilerArgs += ['-Xlint:all']
+    }
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+        testLogging { events 'passed', 'skipped', 'failed' }
+    }
+    tasks.withType(Jar).configureEach {
+        preserveFileTimestamps = false
+        reproducibleFileOrder = true
+        from(rootProject.file('LICENSE'))
+        from(rootProject.file('THIRD_PARTY_NOTICES.md'))
+    }
+    dependencies {
+        testImplementation platform('org.junit:junit-bom:5.13.4')
+        testImplementation 'org.junit.jupiter:junit-jupiter'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+}
+
+tasks.register('distribution', Copy) {
+    dependsOn ':fabric-host:build', ':agent:jar', ':probe-mod:build', ':probe-mod:failureJar', ':demo-v1:jar', ':demo-v2:jar'
+    into layout.buildDirectory.dir('distribution')
+    from(project(':fabric-host').tasks.named('jar'))
+    from(project(':agent').tasks.named('jar'))
+    into('candidates') {
+        from(project(':probe-mod').tasks.named('jar'))
+        from(project(':probe-mod').tasks.named('failureJar'))
+        from(project(':demo-v1').tasks.named('jar'))
+        from(project(':demo-v2').tasks.named('jar'))
+    }
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "fabric_hotload",
+  "version": "${version}",
+  "name": "Fabric Hotload P0",
+  "description": "Experimental runtime loading probes for a Fabric dedicated server.",
+  "license": "Apache-2.0",
+  "environment": "server",
+  "entrypoints": { "main": ["dev.fabric.hotload.host.HotloadHost"] },
+  "mixins": ["fabric-hotload.mixins.json"],
+  "depends": {
+    "fabricloader": "=0.20.1",
+    "minecraft": "=26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}
