@@ -11,6 +11,7 @@ from pathlib import Path
 
 def summarize(project: Path, sources: list[Path]) -> dict[str, object]:
     """只采用基线、退出码、单测和实际分发哈希均一致的服务器结果。"""
+    project = project.resolve()
     sys.path.insert(0, str(project / "integration-tests"))
     from run_probes import digest, load_target
 

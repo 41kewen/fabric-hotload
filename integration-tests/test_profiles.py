@@ -38,6 +38,11 @@ class ProfileTest(unittest.TestCase):
         self.assertEqual(target.host.name, "fabric-hotload-host-test.jar")
         self.assertFalse(target.ordinary_supported)
 
+    def test_normalizes_distribution_paths_before_comparison(self) -> None:
+        (self.project / "alias-component").mkdir()
+        target = load_target(self.project / "alias-component" / "..", "1.20.1")
+        self.assertEqual(target.distribution, self.directory.resolve())
+
     def test_rejects_changed_binary(self) -> None:
         (self.directory / "fabric-hotload-host-test.jar").write_bytes(b"changed")
         with self.assertRaisesRegex(ValueError, "checksum mismatch"):

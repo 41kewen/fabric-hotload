@@ -33,7 +33,7 @@
 - 正常保存与关闭，再启动同一个测试世界；这一重启是保存恢复测试，**不属于前面的热加载操作**。
 - 故意初始化失败的普通 Mod 将运行时标记为 DIRTY_RESTART_REQUIRED，并阻止后续激活。
 
-11 个目标合计 **1,100 次受管生命周期循环、143 项服务器检查**。13 项 JVM 单测在每个目标重复运行，并非 143 个不同的单元用例。另有 6 项 Python 分发边界测试、9 项发布/报告测试通过。[实际分发校验记录](../verification/distribution-20261113-multiversion.json)覆盖所有目标的字节码基线、Mixin 等级、intermediary 映射、JAR CRC 与 thin Agent。
+11 个目标合计 **1,100 次受管生命周期循环、143 项服务器检查**。13 项 JVM 单测在每个目标重复运行，并非 143 个不同的单元用例。另有 7 项 Python 分发边界测试、10 项发布/报告测试通过。[实际分发校验记录](../verification/distribution-20261113-multiversion.json)覆盖所有目标的字节码基线、Mixin 等级、intermediary 映射、JAR CRC 与 thin Agent。
 
 没有真实玩家连接。session/PID 不变只证明服务器进程未重启，不能证明玩家必然不断线、零卡顿或类加载器已完全回收。
 
@@ -43,6 +43,7 @@
 2. 1.20.4 的 tick 平均值接口已切换到纳秒，不能与 1.20.1 共用毫秒实现；独立适配后完成服务器检查。
 3. 1.18.2 的 Maven Fabric API 主 JAR 是依赖壳，缺少运行模块，曾出现 ServerLifecycleEvents 的 ClassNotFoundException；测试改为 SHA1 校验的完整运行包，并验证嵌套 lifecycle 模块。上游下载地址与校验值固定在 targets.json。
 4. [1.19.2 / Loader 0.18.4 安全降级实测](../verification/integration-20261113T124331536040Z-mc1.19.2.json)：普通热加载在提交前拒绝，容器未添加、dirty=false；受管模块 100 次循环与 Agent/保存重启仍通过。这**不代表**已适配 0.18.4 的普通 Mod 热加载。其他未知 Loader 只具备代码层面的关闭策略，未逐一实测。
+5. [首次多版本 GitHub CI](https://github.com/41kewen/fabric-hotload/actions/runs/43430252942)：Linux 的 11 个构建/测试完成；Windows 构建完成，但临时目录的 8.3 别名造成分发路径集合误判。统一规范路径，并添加两个路径归一化回归测试；此修订不修改已经通过服务器测试的 JAR。
 
 ## 未完成与明确限制
 

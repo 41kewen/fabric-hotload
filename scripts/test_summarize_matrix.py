@@ -76,6 +76,12 @@ class SummaryTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "escapes"):
             self.summary()
 
+    def test_normalizes_project_before_report_containment_check(self) -> None:
+        self.summary()
+        (self.project / "alias-component").mkdir()
+        report = summarize(self.project / "alias-component" / "..", [self.source])
+        self.assertTrue(report["success"])
+
 
 if __name__ == "__main__":
     unittest.main()

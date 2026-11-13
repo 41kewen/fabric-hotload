@@ -56,7 +56,8 @@ def load_target(project: Path, name: str, loader: str | None = None) -> TestTarg
     actual_loader = loader or baseline["loader"]
     if not re.fullmatch(r"0\.\d+\.\d+", actual_loader):
         raise ValueError("Loader version must be a release version such as 0.20.1")
-    directory = project / "build" / "targets" / name / "distribution"
+    # Windows CI 的临时根目录可能是 8.3 别名；清单路径和目录枚举须使用同一规范路径。
+    directory = (project / "build" / "targets" / name / "distribution").resolve()
     manifest = json.loads((directory / "distribution.json").read_text(encoding="utf-8"))
     if manifest.get("schema") != 1 or manifest.get("target") != name or manifest.get("baseline") != baseline:
         raise ValueError("Distribution manifest does not match the requested target")
