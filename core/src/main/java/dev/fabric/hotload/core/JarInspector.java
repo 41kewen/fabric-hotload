@@ -55,6 +55,16 @@ public final class JarInspector {
                 }
                 expanded += entry.getSize();
                 if (name.endsWith(".class")) {
+                    try (var header = new java.io.DataInputStream(jar.getInputStream(entry))) {
+                        if (header.readInt() != 0xCAFEBABE) {
+                            throw new IllegalArgumentException("Invalid class file header: " + name);
+                        }
+                        header.readUnsignedShort();
+                        int major = header.readUnsignedShort();
+                        if (major > Runtime.version().feature() + 44) {
+                            blockers.add("Class requires Java " + (major - 44) + ": " + name);
+                        }
+                    }
                     if (name.startsWith("META-INF/versions/")) {
                         blockers.add("Multi-release class definitions are not supported in P0");
                     }

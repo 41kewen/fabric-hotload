@@ -26,21 +26,26 @@ import net.fabricmc.loader.impl.metadata.ModMetadataParser;
 import net.fabricmc.loader.impl.metadata.VersionOverrides;
 
 /** 绑定 Loader 0.20.1；不解除 frozen、不重跑整个启动阶段。 */
-final class LoaderAdapter {
+final class Loader0201Adapter implements OrdinaryModAdapter {
     private final CandidateStore store;
     private final OperationJournal journal;
     private boolean dirty;
 
-    LoaderAdapter(Path directory) throws Exception {
+    Loader0201Adapter(Path directory) throws Exception {
         store = new CandidateStore(directory.resolve("store"));
         journal = new OperationJournal(directory.resolve("operations.jsonl"));
     }
 
-    boolean dirty() {
+    @Override
+    public boolean dirty() {
         return dirty;
     }
 
-    String load(JarInspection inspection) throws Exception {
+    @Override
+    public String description() { return "loader-0.20.1-experimental"; }
+
+    @Override
+    public String load(JarInspection inspection) throws Exception {
         if (!Boolean.getBoolean("hotload.experimentalMods")) {
             throw new IllegalStateException("Experimental mod loading requires -Dhotload.experimentalMods=true");
         }

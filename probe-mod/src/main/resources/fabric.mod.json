@@ -9,5 +9,5 @@
     "main": ["dev.fabric.hotload.probe.OrdinaryProbe"],
     "server": ["dev.fabric.hotload.probe.OrdinaryProbe"]
   },
-  "depends": { "minecraft": "=26.2", "java": ">=25", "fabricloader": ">=0.20.1", "fabric-api": "*" }
+  "depends": { "minecraft": "=${minecraft}", "java": ">=${java}", "fabricloader": ">=0.16.0", "fabric-api": "*" }
 }

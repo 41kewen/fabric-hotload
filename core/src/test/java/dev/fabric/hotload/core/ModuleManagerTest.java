@@ -91,9 +91,10 @@ class ModuleManagerTest {
     void mutationsFromAnotherThreadAreRejected() throws Exception {
         try (ModuleManager manager = manager()) {
             var failure = new java.util.concurrent.atomic.AtomicReference<Throwable>();
-            Thread thread = Thread.ofPlatform().start(() -> {
+            Thread thread = new Thread(() -> {
                 try { manager.load("v1.jar"); } catch (Exception exception) { failure.set(exception); }
             });
+            thread.start();
             thread.join();
             assertInstanceOf(IllegalStateException.class, failure.get());
             assertEquals(0, manager.resourceCount());

@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "success": true,
+  "build_only": false,
+  "platform": "win32",
+  "targets": [
+    {
+      "target": "1.18.2",
+      "baseline": {
+        "minecraft": "1.18.2",
+        "java": 17,
+        "loader": "0.20.1",
+        "api": "0.77.0+1.18.2",
+        "platform": "command-v1",
+        "remap": true,
+        "api_runtime": {
+          "url": "https://cdn.modrinth.com/data/P7dR8mSH/versions/qk28POfr/fabric-api-0.77.0%2B1.18.2.jar",
+          "sha1": "d312b2846af795ee5a99b1ec290f0e023fa48338"
+        }
+      },
+      "status": "server-tested",
+      "build_exit_code": 0,
+      "build_log": "verification/raw/matrix-20261113T124402639496Z/build-1.18.2.log",
+      "unit_tests": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "distribution_check_exit_code": 0,
+      "integration_exit_code": 0,
+      "integration_report": "verification/integration-20261113T124435689099Z-mc1.18.2.json",
+      "integration_checks": 13
+    }
+  ],
+  "unverified": [
+    "online players",
+    "third-party mods",
+    "Linux server runtime"
+  ]
+}

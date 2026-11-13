@@ -6,5 +6,5 @@
   "license": "Apache-2.0",
   "environment": "server",
   "entrypoints": { "main": ["dev.fabric.hotload.probe.FailingProbe"] },
-  "depends": { "minecraft": "=26.2", "java": ">=25", "fabricloader": ">=0.20.1" }
+  "depends": { "minecraft": "=${minecraft}", "java": ">=${java}", "fabricloader": ">=0.16.0" }
 }

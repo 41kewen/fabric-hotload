@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "default": "26.2",
+  "installer": "1.1.2",
+  "targets": {
+    "1.18.2": {"minecraft": "1.18.2", "java": 17, "loader": "0.20.1", "api": "0.77.0+1.18.2", "platform": "command-v1", "remap": true, "api_runtime": {"url": "https://cdn.modrinth.com/data/P7dR8mSH/versions/qk28POfr/fabric-api-0.77.0%2B1.18.2.jar", "sha1": "d312b2846af795ee5a99b1ec290f0e023fa48338"}},
+    "1.19.2": {"minecraft": "1.19.2", "java": 17, "loader": "0.20.1", "api": "0.77.0+1.19.2", "platform": "component-ms", "remap": true},
+    "1.20.1": {"minecraft": "1.20.1", "java": 17, "loader": "0.20.1", "api": "0.92.12+1.20.1", "platform": "supplier-ms", "remap": true},
+    "1.20.4": {"minecraft": "1.20.4", "java": 17, "loader": "0.20.1", "api": "0.97.3+1.20.4", "platform": "supplier-nanos", "remap": true},
+    "1.20.6": {"minecraft": "1.20.6", "java": 21, "loader": "0.20.1", "api": "0.100.8+1.20.6", "platform": "supplier-nanos", "remap": true},
+    "1.21.1": {"minecraft": "1.21.1", "java": 21, "loader": "0.20.1", "api": "0.116.18+1.21.1", "platform": "supplier-nanos", "remap": true},
+    "1.21.4": {"minecraft": "1.21.4", "java": 21, "loader": "0.20.1", "api": "0.119.4+1.21.4", "platform": "supplier-nanos", "remap": true},
+    "1.21.11": {"minecraft": "1.21.11", "java": 21, "loader": "0.20.1", "api": "0.141.6+1.21.11", "platform": "permissions-nanos", "remap": true},
+    "26.1.2": {"minecraft": "26.1.2", "java": 25, "loader": "0.20.1", "api": "0.155.3+26.1.2", "platform": "permissions-nanos", "remap": false},
+    "26.2": {"minecraft": "26.2", "java": 25, "loader": "0.20.1", "api": "0.161.0+26.2", "platform": "permissions-nanos", "remap": false},
+    "26.3": {"minecraft": "26.3", "java": 25, "loader": "0.20.1", "api": "0.166.2+26.3", "platform": "permissions-nanos", "remap": false}
+  }
+}

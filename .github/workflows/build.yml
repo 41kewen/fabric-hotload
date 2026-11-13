@@ -10,13 +10,33 @@ permissions:
   contents: read
 
 jobs:
+  profiles:
+    runs-on: ubuntu-latest
+    outputs:
+      targets: ${{ steps.matrix.outputs.targets }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Read declared targets
+        id: matrix
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          targets = list(json.loads(Path('compatibility/targets.json').read_text())['targets'])
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
+              output.write('targets=' + json.dumps(targets) + '\n')
+          PY
   build:
-    name: JDK 25 / ${{ matrix.os }}
+    needs: profiles
+    name: MC ${{ matrix.target }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
+        target: ${{ fromJSON(needs.profiles.outputs.targets) }}
         os: [ubuntu-latest, windows-latest]
     steps:
       - name: Checkout
@@ -29,11 +49,18 @@ jobs:
           cache: gradle
       - name: Build and unit tests
         shell: bash
-        run: ./gradlew build distribution --console=plain --warning-mode all
+        run: ./gradlew build distribution -Ptarget=${{ matrix.target }} --console=plain --warning-mode all
+      - name: Distribution boundary tests
+        shell: bash
+        run: |
+          python -m unittest discover -s integration-tests -p 'test_*.py' -v
+          python -m unittest discover -s scripts -p 'test_*.py' -v
+      - name: Check target bytecode and mappings
+        run: python scripts/check_distribution.py --target ${{ matrix.target }}
       - name: Upload built JARs
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
-          name: p0-jars-${{ matrix.os }}
-          path: build/distribution/**/*.jar
+          name: jars-mc${{ matrix.target }}-${{ matrix.os }}
+          path: build/targets/${{ matrix.target }}/distribution/
           if-no-files-found: error
           retention-days: 14

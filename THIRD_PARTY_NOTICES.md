@@ -50,3 +50,7 @@ Wrapper JAR 已与 Gradle 官方 SHA256 核对：
 - Minecraft：专有软件，受 Minecraft EULA 约束，不包含在本项目交付包中。
 
 下载的服务器、JDK、Gradle 完整分发包和依赖缓存不提交到源码仓库。
+
+## 旧版 Minecraft 官方映射
+
+1.x 构建通过 Loom 使用 Mojang 官方映射；映射中的版权及使用条款由上游保留。映射仅存在于开发依赖缓存中，不打包或提交到本项目，不分发 Minecraft 类与游戏 JAR。

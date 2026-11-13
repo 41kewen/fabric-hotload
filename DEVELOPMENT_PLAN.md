@@ -2,9 +2,9 @@
 
 日期：2026-11-13（Asia/Shanghai）
 
-状态：P0 原型已实现，并完成 Windows 隔离服务器验证；未完成通用第三方模组兼容或在线玩家验证，详见 `verification/REPORT.md`。
+状态：P0 原型之后已进入 `0.2.0-alpha.1` 多版本适配阶段。当前版本、目标与实际验证结果以 `README.md`、`compatibility/targets.json`、`compatibility/REPORT.md` 为准；以下保留首版设计与后续阶段边界。未完成通用第三方模组兼容或在线玩家验证。
 
-暂用项目名：Fabric Hotload，不代表已注册仓库或发布软件。
+项目名：Fabric Hotload，源码及发布位于 https://github.com/41kewen/fabric-hotload 。
 
 ## 1. 目标与边界
 

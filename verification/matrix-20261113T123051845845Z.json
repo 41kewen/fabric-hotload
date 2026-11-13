@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "success": false,
+  "build_only": false,
+  "platform": "win32",
+  "targets": [
+    {
+      "target": "1.20.1",
+      "baseline": {
+        "minecraft": "1.20.1",
+        "java": 17,
+        "loader": "0.20.1",
+        "api": "0.92.12+1.20.1",
+        "platform": "supplier-ms",
+        "remap": true
+      },
+      "status": "server-failed",
+      "build_exit_code": 0,
+      "build_log": "verification/raw/matrix-20261113T123051845845Z/build-1.20.1.log",
+      "unit_tests": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "integration_exit_code": 1,
+      "integration_report": "verification/integration-20261113T123331232427Z-mc1.20.1.json",
+      "integration_checks": 0,
+      "failure": "Server exited with 1; see [project]\\verification\\raw\\20261113T123331232427Z-mc1.20.1\\baseline-stdout.log"
+    },
+    {
+      "target": "1.21.1",
+      "baseline": {
+        "minecraft": "1.21.1",
+        "java": 21,
+        "loader": "0.20.1",
+        "api": "0.116.18+1.21.1",
+        "platform": "supplier-nanos",
+        "remap": true
+      },
+      "status": "server-tested",
+      "build_exit_code": 0,
+      "build_log": "verification/raw/matrix-20261113T123051845845Z/build-1.21.1.log",
+      "unit_tests": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "integration_exit_code": 0,
+      "integration_report": "verification/integration-20261113T123521654514Z-mc1.21.1.json",
+      "integration_checks": 13
+    }
+  ],
+  "unverified": [
+    "online players",
+    "third-party mods",
+    "Linux server runtime"
+  ]
+}

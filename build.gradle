@@ -1,10 +1,20 @@
 plugins {
     id 'net.fabricmc.fabric-loom' version '1.19.4' apply false
+    id 'net.fabricmc.fabric-loom-remap' version '1.19.4' apply false
 }
+
+def matrix = new groovy.json.JsonSlurper().parse(file('compatibility/targets.json'))
+def selected = providers.gradleProperty('target').getOrElse(matrix.default)
+if (!matrix.targets.containsKey(selected)) {
+    throw new GradleException("Unknown target '${selected}'. Choose one of ${matrix.targets.keySet()}")
+}
+ext.targetId = selected
+ext.targetSpec = matrix.targets[selected]
+def distributionDirectory = layout.buildDirectory.dir("targets/${selected}/distribution")
 
 allprojects {
     group = 'dev.fabric.hotload'
-    version = '0.1.0-p0'
+    version = '0.2.0-alpha.1'
     repositories {
         mavenCentral()
         maven { url = 'https://maven.fabricmc.net/' }
@@ -13,13 +23,15 @@ allprojects {
 
 subprojects {
     apply plugin: 'java-library'
+    layout.buildDirectory = layout.projectDirectory.dir("build/${selected}")
+    def compilationRelease = project.name in ['fabric-host', 'probe-mod'] ? rootProject.targetSpec.java as int : 17
     java {
         toolchain.languageVersion = JavaLanguageVersion.of(25)
         withSourcesJar()
     }
     tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8'
-        options.release = 25
+        options.release = compilationRelease
         options.compilerArgs += ['-Xlint:all']
     }
     tasks.withType(Test).configureEach {
@@ -39,15 +51,48 @@ subprojects {
     }
 }
 
-tasks.register('distribution', Copy) {
+def gameJarTask = targetSpec.remap ? 'remapJar' : 'jar'
+tasks.register('distribution', Sync) {
     dependsOn ':fabric-host:build', ':agent:jar', ':probe-mod:build', ':probe-mod:failureJar', ':demo-v1:jar', ':demo-v2:jar'
-    into layout.buildDirectory.dir('distribution')
-    from(project(':fabric-host').tasks.named('jar'))
+    into distributionDirectory
+    from(project(':fabric-host').tasks.named(gameJarTask))
     from(project(':agent').tasks.named('jar'))
     into('candidates') {
-        from(project(':probe-mod').tasks.named('jar'))
+        // 旧版 Minecraft 必须交付 intermediary 映射的普通 Mod，而不是开发 JAR。
+        from(project(':probe-mod').tasks.named(gameJarTask))
         from(project(':probe-mod').tasks.named('failureJar'))
         from(project(':demo-v1').tasks.named('jar'))
         from(project(':demo-v2').tasks.named('jar'))
     }
 }
+
+def releaseVersion = version.toString()
+def specSnapshot = new LinkedHashMap(targetSpec)
+tasks.register('distributionManifest') {
+    dependsOn 'distribution'
+    inputs.files(fileTree(distributionDirectory) { include '**/*.jar' })
+    inputs.property 'version', releaseVersion
+    inputs.property 'baseline', groovy.json.JsonOutput.toJson(specSnapshot)
+    outputs.file(distributionDirectory.map { it.file('distribution.json') })
+    doLast {
+        def directory = distributionDirectory.get().asFile
+        def artifacts = []
+        directory.eachFileRecurse { candidate ->
+            if (candidate.isFile() && candidate.name.endsWith('.jar')) {
+                def digest = java.security.MessageDigest.getInstance('SHA-256')
+                candidate.withInputStream { input ->
+                    byte[] buffer = new byte[8192]
+                    int count
+                    while ((count = input.read(buffer)) != -1) { digest.update(buffer, 0, count) }
+                }
+                artifacts.add([path: directory.toPath().relativize(candidate.toPath()).toString().replace('\\', '/'),
+                        sha256: digest.digest().encodeHex().toString()])
+            }
+        }
+        artifacts.sort { it.path }
+        if (artifacts.size() != 6) { throw new GradleException("Expected 6 JARs, found ${artifacts.size()}") }
+        def manifest = [schema: 1, target: selected, version: releaseVersion, baseline: specSnapshot, artifacts: artifacts]
+        new File(directory, 'distribution.json').text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(manifest)) + '\n'
+    }
+}
+tasks.named('distribution') { finalizedBy 'distributionManifest' }

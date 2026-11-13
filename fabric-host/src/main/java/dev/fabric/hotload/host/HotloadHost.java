@@ -12,13 +12,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.permissions.Permissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +23,7 @@ public final class HotloadHost implements ModInitializer {
     private static final Logger LOGGER = LoggerFactory.getLogger("fabric-hotload");
     private final String session = UUID.randomUUID().toString();
     private ModuleManager modules;
-    private LoaderAdapter adapter;
+    private OrdinaryModAdapter adapter;
     private long lastTick;
     private long maxTickGap;
 
@@ -36,9 +33,9 @@ public final class HotloadHost implements ModInitializer {
             try {
                 Path directory = FabricLoader.getInstance().getGameDir().resolve("hotmods");
                 modules = new ModuleManager(directory, getClass().getClassLoader(), LOGGER::info);
-                adapter = new LoaderAdapter(directory);
-                LOGGER.info("HOTLOAD_READY session={} pid={} probe={} mixinTouches={}",
-                        session, ProcessHandle.current().pid(), ProbeTarget.value(), ProbeTarget.mixinTouches);
+                adapter = LoaderAdapters.create(directory);
+                LOGGER.info("HOTLOAD_READY session={} pid={} probe={} mixinTouches={} ordinaryAdapter={}",
+                        session, ProcessHandle.current().pid(), ProbeTarget.value(), ProbeTarget.mixinTouches, adapter.description());
             } catch (Exception exception) { throw new IllegalStateException("Hotload initialization failed", exception); }
         });
         ServerTickEvents.END_SERVER_TICK.register(server -> {
@@ -52,14 +49,14 @@ public final class HotloadHost implements ModInitializer {
                 try { modules.close(); } catch (Exception exception) { LOGGER.error("Hotload cleanup failed", exception); }
             }
         });
-        CommandRegistrationCallback.EVENT.register((dispatcher, registry, environment) -> dispatcher.register(
-                literal("hotmods").requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_OWNER))
+        MinecraftPlatform.register(dispatcher -> dispatcher.register(
+                literal("hotmods").requires(MinecraftPlatform::authorized)
                         .then(literal("status").executes(context -> run(context, () -> "STATUS session=" + session
                                 + " pid=" + ProcessHandle.current().pid() + " tick=" + context.getSource().getServer().getTickCount()
                                 + " resources=" + modules.resourceCount() + " dirty=" + (modules.dirty() || adapter.dirty())
                                 + " modules=" + modules.status()
-                                + " avgTickMs=" + context.getSource().getServer().getAverageTickTimeNanos() / 1_000_000.0
-                                + " maxTickGapMs=" + maxTickGap / 1_000_000.0)))
+                                + " avgTickMs=" + MinecraftPlatform.averageTickMs(context.getSource().getServer())
+                                + " maxTickGapMs=" + maxTickGap / 1_000_000.0 + " ordinaryAdapter=" + adapter.description())))
                         .then(literal("inspect").then(argument("jar", StringArgumentType.word()).executes(context ->
                                 run(context, () -> inspect(word(context, "jar"))))))
                         .then(literal("load").then(argument("jar", StringArgumentType.word()).executes(context ->
@@ -102,16 +99,16 @@ public final class HotloadHost implements ModInitializer {
 
     private int run(CommandContext<CommandSourceStack> context, CheckedSupplier action) {
         if (modules == null) {
-            context.getSource().sendFailure(Component.literal("Hotload server lifecycle is not ready"));
+            context.getSource().sendFailure(MinecraftPlatform.text("Hotload server lifecycle is not ready"));
             return 0;
         }
         try {
             String result = action.get();
-            context.getSource().sendSuccess(() -> Component.literal(result), false);
+            MinecraftPlatform.sendSuccess(context.getSource(), MinecraftPlatform.text(result));
             return Command.SINGLE_SUCCESS;
         } catch (Exception | LinkageError failure) {
             LOGGER.error("HOTLOAD_OPERATION_FAILED", failure);
-            context.getSource().sendFailure(Component.literal("HOTLOAD_REJECTED " + failure.getMessage()));
+            context.getSource().sendFailure(MinecraftPlatform.text("HOTLOAD_REJECTED " + failure.getMessage()));
             return 0;
         }
     }

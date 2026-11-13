@@ -99,7 +99,8 @@ final class ManagedContext implements ModuleContext, AutoCloseable {
         commands.clear();
         ticks.clear();
         RuntimeException failure = null;
-        for (AutoCloseable resource : resources.reversed()) {
+        for (int index = resources.size() - 1; index >= 0; index--) {
+            AutoCloseable resource = resources.get(index);
             try {
                 resource.close();
             } catch (Exception | LinkageError exception) {

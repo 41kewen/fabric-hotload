@@ -1,0 +1,544 @@
+{
+  "success": true,
+  "checks": [
+    {
+      "target": "1.18.2",
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "scripts/check_distribution.py",
+        "--target",
+        "1.18.2"
+      ],
+      "exit_code": 0,
+      "result": {
+        "target": "1.18.2",
+        "success": true,
+        "legacy_remap": true,
+        "artifacts": [
+          {
+            "name": "hotload-demo-v1-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-demo-v2-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-failure-probe-0.2.0-alpha.1+mc1.18.2.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-ordinary-probe-0.2.0-alpha.1+mc1.18.2.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "fabric-hotload-agent-0.2.0-alpha.1.jar",
+            "classes": 3,
+            "maximum_java": 17
+          },
+          {
+            "name": "fabric-hotload-host-0.2.0-alpha.1+mc1.18.2.jar",
+            "classes": 21,
+            "maximum_java": 17
+          }
+        ]
+      }
+    },
+    {
+      "target": "1.19.2",
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "scripts/check_distribution.py",
+        "--target",
+        "1.19.2"
+      ],
+      "exit_code": 0,
+      "result": {
+        "target": "1.19.2",
+        "success": true,
+        "legacy_remap": true,
+        "artifacts": [
+          {
+            "name": "hotload-demo-v1-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-demo-v2-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-failure-probe-0.2.0-alpha.1+mc1.19.2.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-ordinary-probe-0.2.0-alpha.1+mc1.19.2.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "fabric-hotload-agent-0.2.0-alpha.1.jar",
+            "classes": 3,
+            "maximum_java": 17
+          },
+          {
+            "name": "fabric-hotload-host-0.2.0-alpha.1+mc1.19.2.jar",
+            "classes": 21,
+            "maximum_java": 17
+          }
+        ]
+      }
+    },
+    {
+      "target": "1.20.1",
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "scripts/check_distribution.py",
+        "--target",
+        "1.20.1"
+      ],
+      "exit_code": 0,
+      "result": {
+        "target": "1.20.1",
+        "success": true,
+        "legacy_remap": true,
+        "artifacts": [
+          {
+            "name": "hotload-demo-v1-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-demo-v2-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-failure-probe-0.2.0-alpha.1+mc1.20.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-ordinary-probe-0.2.0-alpha.1+mc1.20.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "fabric-hotload-agent-0.2.0-alpha.1.jar",
+            "classes": 3,
+            "maximum_java": 17
+          },
+          {
+            "name": "fabric-hotload-host-0.2.0-alpha.1+mc1.20.1.jar",
+            "classes": 21,
+            "maximum_java": 17
+          }
+        ]
+      }
+    },
+    {
+      "target": "1.20.4",
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "scripts/check_distribution.py",
+        "--target",
+        "1.20.4"
+      ],
+      "exit_code": 0,
+      "result": {
+        "target": "1.20.4",
+        "success": true,
+        "legacy_remap": true,
+        "artifacts": [
+          {
+            "name": "hotload-demo-v1-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-demo-v2-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-failure-probe-0.2.0-alpha.1+mc1.20.4.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-ordinary-probe-0.2.0-alpha.1+mc1.20.4.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "fabric-hotload-agent-0.2.0-alpha.1.jar",
+            "classes": 3,
+            "maximum_java": 17
+          },
+          {
+            "name": "fabric-hotload-host-0.2.0-alpha.1+mc1.20.4.jar",
+            "classes": 21,
+            "maximum_java": 17
+          }
+        ]
+      }
+    },
+    {
+      "target": "1.20.6",
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "scripts/check_distribution.py",
+        "--target",
+        "1.20.6"
+      ],
+      "exit_code": 0,
+      "result": {
+        "target": "1.20.6",
+        "success": true,
+        "legacy_remap": true,
+        "artifacts": [
+          {
+            "name": "hotload-demo-v1-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-demo-v2-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-failure-probe-0.2.0-alpha.1+mc1.20.6.jar",
+            "classes": 1,
+            "maximum_java": 21
+          },
+          {
+            "name": "hotload-ordinary-probe-0.2.0-alpha.1+mc1.20.6.jar",
+            "classes": 1,
+            "maximum_java": 21
+          },
+          {
+            "name": "fabric-hotload-agent-0.2.0-alpha.1.jar",
+            "classes": 3,
+            "maximum_java": 17
+          },
+          {
+            "name": "fabric-hotload-host-0.2.0-alpha.1+mc1.20.6.jar",
+            "classes": 21,
+            "maximum_java": 21
+          }
+        ]
+      }
+    },
+    {
+      "target": "1.21.1",
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "scripts/check_distribution.py",
+        "--target",
+        "1.21.1"
+      ],
+      "exit_code": 0,
+      "result": {
+        "target": "1.21.1",
+        "success": true,
+        "legacy_remap": true,
+        "artifacts": [
+          {
+            "name": "hotload-demo-v1-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-demo-v2-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-failure-probe-0.2.0-alpha.1+mc1.21.1.jar",
+            "classes": 1,
+            "maximum_java": 21
+          },
+          {
+            "name": "hotload-ordinary-probe-0.2.0-alpha.1+mc1.21.1.jar",
+            "classes": 1,
+            "maximum_java": 21
+          },
+          {
+            "name": "fabric-hotload-agent-0.2.0-alpha.1.jar",
+            "classes": 3,
+            "maximum_java": 17
+          },
+          {
+            "name": "fabric-hotload-host-0.2.0-alpha.1+mc1.21.1.jar",
+            "classes": 21,
+            "maximum_java": 21
+          }
+        ]
+      }
+    },
+    {
+      "target": "1.21.4",
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "scripts/check_distribution.py",
+        "--target",
+        "1.21.4"
+      ],
+      "exit_code": 0,
+      "result": {
+        "target": "1.21.4",
+        "success": true,
+        "legacy_remap": true,
+        "artifacts": [
+          {
+            "name": "hotload-demo-v1-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-demo-v2-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-failure-probe-0.2.0-alpha.1+mc1.21.4.jar",
+            "classes": 1,
+            "maximum_java": 21
+          },
+          {
+            "name": "hotload-ordinary-probe-0.2.0-alpha.1+mc1.21.4.jar",
+            "classes": 1,
+            "maximum_java": 21
+          },
+          {
+            "name": "fabric-hotload-agent-0.2.0-alpha.1.jar",
+            "classes": 3,
+            "maximum_java": 17
+          },
+          {
+            "name": "fabric-hotload-host-0.2.0-alpha.1+mc1.21.4.jar",
+            "classes": 21,
+            "maximum_java": 21
+          }
+        ]
+      }
+    },
+    {
+      "target": "1.21.11",
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "scripts/check_distribution.py",
+        "--target",
+        "1.21.11"
+      ],
+      "exit_code": 0,
+      "result": {
+        "target": "1.21.11",
+        "success": true,
+        "legacy_remap": true,
+        "artifacts": [
+          {
+            "name": "hotload-demo-v1-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-demo-v2-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-failure-probe-0.2.0-alpha.1+mc1.21.11.jar",
+            "classes": 1,
+            "maximum_java": 21
+          },
+          {
+            "name": "hotload-ordinary-probe-0.2.0-alpha.1+mc1.21.11.jar",
+            "classes": 1,
+            "maximum_java": 21
+          },
+          {
+            "name": "fabric-hotload-agent-0.2.0-alpha.1.jar",
+            "classes": 3,
+            "maximum_java": 17
+          },
+          {
+            "name": "fabric-hotload-host-0.2.0-alpha.1+mc1.21.11.jar",
+            "classes": 21,
+            "maximum_java": 21
+          }
+        ]
+      }
+    },
+    {
+      "target": "26.1.2",
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "scripts/check_distribution.py",
+        "--target",
+        "26.1.2"
+      ],
+      "exit_code": 0,
+      "result": {
+        "target": "26.1.2",
+        "success": true,
+        "legacy_remap": false,
+        "artifacts": [
+          {
+            "name": "hotload-demo-v1-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-demo-v2-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-failure-probe-0.2.0-alpha.1+mc26.1.2.jar",
+            "classes": 1,
+            "maximum_java": 25
+          },
+          {
+            "name": "hotload-ordinary-probe-0.2.0-alpha.1+mc26.1.2.jar",
+            "classes": 1,
+            "maximum_java": 25
+          },
+          {
+            "name": "fabric-hotload-agent-0.2.0-alpha.1.jar",
+            "classes": 3,
+            "maximum_java": 17
+          },
+          {
+            "name": "fabric-hotload-host-0.2.0-alpha.1+mc26.1.2.jar",
+            "classes": 21,
+            "maximum_java": 25
+          }
+        ]
+      }
+    },
+    {
+      "target": "26.2",
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "scripts/check_distribution.py",
+        "--target",
+        "26.2"
+      ],
+      "exit_code": 0,
+      "result": {
+        "target": "26.2",
+        "success": true,
+        "legacy_remap": false,
+        "artifacts": [
+          {
+            "name": "hotload-demo-v1-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-demo-v2-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-failure-probe-0.2.0-alpha.1+mc26.2.jar",
+            "classes": 1,
+            "maximum_java": 25
+          },
+          {
+            "name": "hotload-ordinary-probe-0.2.0-alpha.1+mc26.2.jar",
+            "classes": 1,
+            "maximum_java": 25
+          },
+          {
+            "name": "fabric-hotload-agent-0.2.0-alpha.1.jar",
+            "classes": 3,
+            "maximum_java": 17
+          },
+          {
+            "name": "fabric-hotload-host-0.2.0-alpha.1+mc26.2.jar",
+            "classes": 21,
+            "maximum_java": 25
+          }
+        ]
+      }
+    },
+    {
+      "target": "26.3",
+      "command": [
+        "python",
+        "-X",
+        "utf8",
+        "scripts/check_distribution.py",
+        "--target",
+        "26.3"
+      ],
+      "exit_code": 0,
+      "result": {
+        "target": "26.3",
+        "success": true,
+        "legacy_remap": false,
+        "artifacts": [
+          {
+            "name": "hotload-demo-v1-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-demo-v2-0.2.0-alpha.1.jar",
+            "classes": 1,
+            "maximum_java": 17
+          },
+          {
+            "name": "hotload-failure-probe-0.2.0-alpha.1+mc26.3.jar",
+            "classes": 1,
+            "maximum_java": 25
+          },
+          {
+            "name": "hotload-ordinary-probe-0.2.0-alpha.1+mc26.3.jar",
+            "classes": 1,
+            "maximum_java": 25
+          },
+          {
+            "name": "fabric-hotload-agent-0.2.0-alpha.1.jar",
+            "classes": 3,
+            "maximum_java": 17
+          },
+          {
+            "name": "fabric-hotload-host-0.2.0-alpha.1+mc26.3.jar",
+            "classes": 21,
+            "maximum_java": 25
+          }
+        ]
+      }
+    }
+  ]
+}

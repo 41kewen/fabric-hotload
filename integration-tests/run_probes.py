@@ -13,16 +13,77 @@ import subprocess
 import threading
 import time
 import urllib.request
+import zipfile
+from dataclasses import dataclass
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import TextIO
 from urllib.parse import urlparse
 
 
-VERSION = "26.2"
-LOADER = "0.20.1"
-API = "0.161.0+26.2"
-INSTALLER = "1.1.2"
+@dataclass(frozen=True)
+class TestTarget:
+    """固定构建基线与实际要运行的 Loader；每个角色对应一个已校验的 JAR。"""
+
+    name: str
+    minecraft: str
+    loader: str
+    api: str
+    java: int
+    installer: str
+    project_version: str
+    distribution: Path
+    host: Path
+    agent: Path
+    ordinary: Path
+    failure: Path
+    demo_v1: Path
+    demo_v2: Path
+    api_runtime_url: str | None = None
+    api_runtime_sha1: str | None = None
+
+    @property
+    def ordinary_supported(self) -> bool:
+        return self.loader == "0.20.1"
+
+
+def load_target(project: Path, name: str, loader: str | None = None) -> TestTarget:
+    """拒绝跨版本产物、未完成构建和被替换的 JAR，再创建任何服务器实例。"""
+    matrix = json.loads((project / "compatibility/targets.json").read_text(encoding="utf-8"))
+    if name not in matrix["targets"]:
+        raise ValueError(f"Unknown target: {name}")
+    baseline = matrix["targets"][name]
+    actual_loader = loader or baseline["loader"]
+    if not re.fullmatch(r"0\.\d+\.\d+", actual_loader):
+        raise ValueError("Loader version must be a release version such as 0.20.1")
+    directory = project / "build" / "targets" / name / "distribution"
+    manifest = json.loads((directory / "distribution.json").read_text(encoding="utf-8"))
+    if manifest.get("schema") != 1 or manifest.get("target") != name or manifest.get("baseline") != baseline:
+        raise ValueError("Distribution manifest does not match the requested target")
+    artifacts: list[Path] = []
+    for item in manifest["artifacts"]:
+        relative = PurePosixPath(item["path"])
+        if relative.is_absolute() or ".." in relative.parts or "\\" in item["path"] or relative.suffix != ".jar":
+            raise ValueError("Unsafe distribution path")
+        path = directory.joinpath(*relative.parts).resolve()
+        if not path.is_relative_to(directory.resolve()) or digest(path) != item["sha256"]:
+            raise ValueError(f"Distribution checksum mismatch: {relative}")
+        artifacts.append(path)
+    if len(artifacts) != 6 or len(set(artifacts)) != 6 or set(directory.rglob("*.jar")) != set(artifacts):
+        raise ValueError("Distribution must contain exactly the six recorded JARs")
+
+    def role(prefix: str) -> Path:
+        matches = [path for path in artifacts if path.name.startswith(prefix)]
+        if len(matches) != 1:
+            raise ValueError(f"Missing or duplicate distribution role: {prefix}")
+        return matches[0]
+
+    return TestTarget(name, baseline["minecraft"], actual_loader, baseline["api"], baseline["java"],
+                      matrix["installer"], manifest["version"], directory,
+                      role("fabric-hotload-host-"), role("fabric-hotload-agent-"),
+                      role("hotload-ordinary-probe-"), role("hotload-failure-probe-"),
+                      role("hotload-demo-v1-"), role("hotload-demo-v2-"),
+                      baseline.get("api_runtime", {}).get("url"), baseline.get("api_runtime", {}).get("sha1"))
 
 
 def digest(path: Path, algorithm: str = "sha256") -> str:
@@ -166,7 +227,7 @@ def require(condition: bool, detail: str) -> None:
 
 
 def prepare(directory: Path, java: Path, jvm_options: list[str], installer: Path,
-            minecraft: Path, distribution: Path, api: Path, baseline: bool, logs: Path) -> None:
+            minecraft: Path, target: TestTarget, api: Path, baseline: bool, logs: Path) -> None:
     if directory.exists():
         raise FileExistsError(f"Refusing to overwrite existing server: {directory}")
     directory.mkdir(parents=True)
@@ -176,21 +237,19 @@ def prepare(directory: Path, java: Path, jvm_options: list[str], installer: Path
     candidates.mkdir(parents=True)
     shutil.copy2(minecraft, directory / "server.jar")
     shutil.copy2(api, mods / api.name)
-    shutil.copy2(distribution / "fabric-hotload-host-0.1.0-p0.jar", mods)
-    ordinary = distribution / "candidates" / "hotload-ordinary-probe-0.1.0-p0.jar"
+    shutil.copy2(target.host, mods)
+    ordinary = target.ordinary
     shutil.copy2(ordinary, mods / ordinary.name if baseline else candidates / "ordinary-probe.jar")
-    for version in ("v1", "v2"):
-        shutil.copy2(distribution / "candidates" / f"hotload-demo-{version}-0.1.0-p0.jar",
-                     candidates / f"demo-{version}.jar")
-    shutil.copy2(distribution / "candidates" / "hotload-failure-probe-0.1.0-p0.jar",
-                 candidates / "failure-probe.jar")
+    shutil.copy2(target.demo_v1, candidates / "demo-v1.jar")
+    shutil.copy2(target.demo_v2, candidates / "demo-v2.jar")
+    shutil.copy2(target.failure, candidates / "failure-probe.jar")
     (directory / "eula.txt").write_text("# Explicitly accepted for this isolated test instance\neula=true\n", encoding="utf-8")
     (directory / "server.properties").write_text(
         "server-ip=127.0.0.1\nserver-port=0\nonline-mode=false\nenforce-secure-profile=false\n"
         "enable-rcon=false\nview-distance=2\nsimulation-distance=2\nmax-players=2\n"
         "level-seed=1\nmax-tick-time=180000\n", encoding="utf-8")
-    command = [str(java), *jvm_options, "-jar", str(installer), "server", "-mcversion", VERSION,
-               "-loader", LOADER, "-dir", str(directory)]
+    command = [str(java), *jvm_options, "-jar", str(installer), "server", "-mcversion", target.minecraft,
+               "-loader", target.loader, "-dir", str(directory)]
     result = subprocess.run(command, cwd=directory, capture_output=True, timeout=240)
     (logs / f"{directory.name}-install.log").write_bytes(result.stdout + result.stderr)
     (logs / f"{directory.name}-install.json").write_text(
@@ -201,6 +260,8 @@ def prepare(directory: Path, java: Path, jvm_options: list[str], installer: Path
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project", type=Path, default=Path(__file__).resolve().parents[1])
+    parser.add_argument("--target", default="26.2")
+    parser.add_argument("--loader-version", help="覆盖运行 Loader，用于验证未适配版本的安全降级")
     parser.add_argument("--java-home", type=Path, required=True)
     parser.add_argument("--minecraft-server", type=Path)
     parser.add_argument("--proxy")
@@ -213,19 +274,23 @@ def main() -> int:
         parser.error("--cycles must be 1..200")
     project = args.project.resolve()
     java = args.java_home.resolve() / "bin" / ("java.exe" if os.name == "nt" else "java")
-    distribution = project / "build" / "distribution"
-    if not java.is_file() or not distribution.is_dir():
-        parser.error("Java executable or built distribution is absent")
+    if not java.is_file():
+        parser.error("Java executable is absent")
+    try:
+        target = load_target(project, args.target, args.loader_version)
+    except (OSError, ValueError, KeyError, TypeError) as exception:
+        parser.error(str(exception))
     jvm_options = proxy_arguments(args.proxy) + ["-Dfile.encoding=UTF-8", "-Duser.language=en", "-Duser.country=US"]
     if args.proxy:
         urllib.request.install_opener(urllib.request.build_opener(
             urllib.request.ProxyHandler({"http": args.proxy, "https": args.proxy})))
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ") + "-mc" + target.name
     logs = project / "verification" / "raw" / stamp
     logs.mkdir(parents=True, exist_ok=False)
     report_path = project / "verification" / f"integration-{stamp}.json"
-    report: dict[str, object] = {"minecraft": VERSION, "loader": LOADER, "fabric_api": API,
-                               "installer": INSTALLER, "success": False, "checks": [],
+    report: dict[str, object] = {"target": target.name, "project_version": target.project_version,
+                               "minecraft": target.minecraft, "loader": target.loader, "fabric_api": target.api,
+                               "installer": target.installer, "success": False, "checks": [],
                                "unverified": ["online player continuity", "Linux", "third-party mods",
                                               "arbitrary Mixin/registry additions", "full JVM class unloading"]}
     checks: list[dict[str, str]] = []
@@ -237,37 +302,63 @@ def main() -> int:
 
     try:
         downloads = project / "integration-tests" / "downloads"
-        installer_url = f"https://maven.fabricmc.net/net/fabricmc/fabric-installer/{INSTALLER}/fabric-installer-{INSTALLER}.jar"
+        installer_url = f"https://maven.fabricmc.net/net/fabricmc/fabric-installer/{target.installer}/fabric-installer-{target.installer}.jar"
         with urllib.request.urlopen(installer_url + ".sha1", timeout=30) as response:
             installer_sha1 = response.read().decode("ascii").strip().split()[0]
-        installer = download(installer_url, downloads / f"fabric-installer-{INSTALLER}.jar", installer_sha1)
-        api_url = f"https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/{API}/fabric-api-{API}.jar"
-        with urllib.request.urlopen(api_url + ".sha1", timeout=30) as response:
-            api_sha1 = response.read().decode("ascii").strip().split()[0]
-        api = download(api_url, downloads / f"fabric-api-{API}.jar", api_sha1)
-        version_url = "https://piston-meta.mojang.com/v1/packages/f28ad96ed5d65e2438da836144a3de15bb9cafe7/26.2.json"
+        installer = download(installer_url, downloads / f"fabric-installer-{target.installer}.jar", installer_sha1)
+        if target.api_runtime_url is not None:
+            require(target.api_runtime_sha1 is not None, "Runtime API checksum is missing")
+            api_url = target.api_runtime_url
+            api = download(api_url, downloads / f"fabric-api-{target.api}-runtime.jar", target.api_runtime_sha1)
+        else:
+            api_url = f"https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/{target.api}/fabric-api-{target.api}.jar"
+            with urllib.request.urlopen(api_url + ".sha1", timeout=30) as response:
+                api_sha1 = response.read().decode("ascii").strip().split()[0]
+            api = download(api_url, downloads / f"fabric-api-{target.api}.jar", api_sha1)
+        with zipfile.ZipFile(api) as api_jar:
+            require(api_jar.testzip() is None, "Runtime Fabric API CRC failed")
+            descriptor = json.loads(api_jar.read("fabric.mod.json"))
+            nested = [item["file"] for item in descriptor.get("jars", [])]
+            require(descriptor["id"] == "fabric-api" and descriptor["version"] == target.api,
+                    "Runtime Fabric API version mismatch")
+            require(any("fabric-lifecycle-events" in name and name in api_jar.namelist() for name in nested),
+                    "Fabric API is a thin Maven artifact, not a runnable bundle")
+        report["fabric_api_download_url"] = api_url
+        with urllib.request.urlopen("https://piston-meta.mojang.com/mc/game/version_manifest_v2.json", timeout=30) as response:
+            versions = json.load(response)["versions"]
+        version_url = next((item["url"] for item in versions if item["id"] == target.minecraft), None)
+        require(version_url is not None, "Minecraft version is absent from the official manifest")
         with urllib.request.urlopen(version_url, timeout=30) as response:
             metadata = json.load(response)
-        require(metadata["id"] == VERSION and metadata["javaVersion"]["majorVersion"] == 25, "Unexpected Minecraft metadata")
+        require(metadata["id"] == target.minecraft and metadata["javaVersion"]["majorVersion"] == target.java,
+                "Unexpected Minecraft metadata or Java baseline")
         if args.minecraft_server:
             minecraft = args.minecraft_server.resolve()
             require(digest(minecraft, "sha1") == metadata["downloads"]["server"]["sha1"], "Minecraft cache SHA1 mismatch")
         else:
-            minecraft = download(metadata["downloads"]["server"]["url"], downloads / "minecraft-26.2.jar",
+            minecraft = download(metadata["downloads"]["server"]["url"], downloads / f"minecraft-{target.minecraft}.jar",
                                  metadata["downloads"]["server"]["sha1"])
         report["artifacts"] = [{"path": str(path), "sha256": digest(path)}
-                               for path in [installer, api, minecraft, *sorted(distribution.rglob("*.jar"))]]
+                               for path in [installer, api, minecraft, *sorted(target.distribution.rglob("*.jar"))]]
+        for artifact in report["artifacts"]:
+            path = Path(artifact["path"])
+            artifact["path"] = path.relative_to(project).as_posix() if path.is_relative_to(project) else "external/" + path.name
         java_version = subprocess.run([str(java), "-version"], capture_output=True, timeout=15)
         report["java_version"] = (java_version.stdout + java_version.stderr).decode("utf-8", "replace")
         report["java_version_exit_code"] = java_version.returncode
+        require(java_version.returncode == 0, "Java version command failed")
+        report["platform"] = os.name
         baseline = project / "integration-tests" / f"server-baseline-{stamp}"
         hot = project / "integration-tests" / f"server-hot-{stamp}"
         failure_server = project / "integration-tests" / f"server-failure-{stamp}"
         for directory, normal in ((baseline, True), (hot, False), (failure_server, False)):
-            prepare(directory, java, jvm_options, installer, minecraft, distribution, api, normal, logs)
-        agent = distribution / "fabric-hotload-agent-0.1.0-p0.jar"
-        command = [str(java), *jvm_options, f"-javaagent:{agent}", "-Dhotload.experimentalMods=true",
+            prepare(directory, java, jvm_options, installer, minecraft, target, api, normal, logs)
+        agent = target.agent
+        # 多个隔离实例并行时，避免每个 1 GiB JVM 都按整机核心数创建世界生成线程。
+        command = [str(java), *jvm_options, "-XX:ActiveProcessorCount=4", f"-javaagent:{agent}", "-Dhotload.experimentalMods=true",
                    "-Xms512M", "-Xmx1G", "-jar", "fabric-server-launch.jar", "nogui"]
+        report["jvm_active_processors"] = 4
+        report["jvm_max_heap_mb"] = 1024
 
         def server(directory: Path, phase: str) -> Server:
             return Server(directory, command, logs / f"{phase}-stdout.log", logs / f"{phase}-commands.jsonl")
@@ -286,21 +377,33 @@ def main() -> int:
             pid = instance.process.pid
             require(f"pid={pid}" in before, "Server PID mismatch")
             instance.command("hotmods ordinary", "ORDINARY loaded=false")
-            instance.command("hotmods loadmod ordinary-probe.jar", "MOD_STARTED_EXPERIMENTAL hotload_probe")
-            time.sleep(0.5)
-            result = instance.command("hotmods ordinary", "ORDINARY loaded=true")
-            require("main=1 server=true" in result and "resource=ordinary-resource-ok container=true" in result,
-                    "Late-loaded ordinary mod metadata/resource/initializers failed")
-            tick_match = re.search(r"ticks=(\d+)", result)
-            require(tick_match is not None, "Ordinary tick evidence missing")
-            ticks = int(tick_match.group(1)) if tick_match else 0
-            time.sleep(0.25)
-            next_result = instance.command("hotmods ordinary", "ORDINARY loaded=true")
-            next_ticks = re.search(r"ticks=(\d+)", next_result)
-            require(next_ticks is not None and int(next_ticks.group(1)) > ticks, "Ordinary tick listener did not run")
-            checked("ordinary late load matches baseline functionality", next_result)
-            rejected = instance.command("hotmods loadmod ordinary-probe.jar", "HOTLOAD_REJECTED Duplicate mod")
-            checked("duplicate ordinary mod rejected", rejected)
+            if target.ordinary_supported:
+                require("ordinaryAdapter=loader-0.20.1-experimental" in before, "Wrong ordinary adapter")
+                instance.command("hotmods loadmod ordinary-probe.jar", "MOD_STARTED_EXPERIMENTAL hotload_probe")
+                time.sleep(0.5)
+                result = instance.command("hotmods ordinary", "ORDINARY loaded=true")
+                require("main=1 server=true" in result and "resource=ordinary-resource-ok container=true" in result,
+                        "Late-loaded ordinary mod metadata/resource/initializers failed")
+                tick_match = re.search(r"ticks=(\d+)", result)
+                require(tick_match is not None, "Ordinary tick evidence missing")
+                ticks = int(tick_match.group(1)) if tick_match else 0
+                time.sleep(0.25)
+                next_result = instance.command("hotmods ordinary", "ORDINARY loaded=true")
+                next_ticks = re.search(r"ticks=(\d+)", next_result)
+                require(next_ticks is not None and int(next_ticks.group(1)) > ticks, "Ordinary tick listener did not run")
+                checked("ordinary late load matches baseline functionality", next_result)
+                rejected = instance.command("hotmods loadmod ordinary-probe.jar", "HOTLOAD_REJECTED Duplicate mod")
+                checked("duplicate ordinary mod rejected", rejected)
+            else:
+                require("ordinaryAdapter=unsupported-loader-" + target.loader in before, "Unsafe Loader fallback")
+                rejected = instance.command("hotmods loadmod ordinary-probe.jar", "HOTLOAD_REJECTED UNSUPPORTED_LOADER")
+                require("DIRTY_RESTART_REQUIRED" not in rejected, "Preflight rejection changed dirty state")
+                checked("unsupported Loader rejects ordinary activation", rejected)
+                unchanged = instance.command("hotmods ordinary", "ORDINARY loaded=false")
+                require("container=false" in unchanged, "Unsupported Loader installed an ordinary container")
+                clean = instance.command("hotmods status", "STATUS session=")
+                require("dirty=false" in clean, "Unsupported Loader rejection corrupted managed runtime")
+                checked("unsupported Loader preserves managed runtime", clean)
             instance.command("hotmods load demo-v1.jar", "MODULE_STARTED demo_counter version=1.0.0")
             instance.command("hotmods exec demo_counter hello", "demo-v1 ticks=")
             instance.command("hotmods reload demo-v2.jar", "MODULE_STARTED demo_counter version=2.0.0")
@@ -335,19 +438,23 @@ def main() -> int:
             require("resources=0 dirty=false modules=[]" in result, "Restart state is inconsistent")
             instance.command("save-all flush", "Saved the game", 90)
             checked("saved world reopens normally", result)
-        with server(failure_server, "failure") as instance:
-            failed = instance.command("hotmods loadmod failure-probe.jar", "HOTLOAD_REJECTED DIRTY_RESTART_REQUIRED")
-            state = instance.command("hotmods status", "STATUS session=")
-            require("dirty=true" in state, "Ordinary initializer failure did not retain dirty state")
-            blocked = instance.command("hotmods load demo-v1.jar", "HOTLOAD_REJECTED DIRTY_RESTART_REQUIRED")
-            checked("ordinary initializer failure blocks further activation", failed + " | " + blocked)
-            journal = (failure_server / "hotmods" / "operations.jsonl").read_text(encoding="utf-8")
-            require("COMMITTING_IRREVERSIBLE" in journal and "DIRTY_RESTART_REQUIRED" in journal,
-                    "Ordinary failure audit evidence missing")
+        if target.ordinary_supported:
+            with server(failure_server, "failure") as instance:
+                failed = instance.command("hotmods loadmod failure-probe.jar", "HOTLOAD_REJECTED DIRTY_RESTART_REQUIRED")
+                state = instance.command("hotmods status", "STATUS session=")
+                require("dirty=true" in state, "Ordinary initializer failure did not retain dirty state")
+                blocked = instance.command("hotmods load demo-v1.jar", "HOTLOAD_REJECTED DIRTY_RESTART_REQUIRED")
+                checked("ordinary initializer failure blocks further activation", failed + " | " + blocked)
+                journal = (failure_server / "hotmods" / "operations.jsonl").read_text(encoding="utf-8")
+                require("COMMITTING_IRREVERSIBLE" in journal and "DIRTY_RESTART_REQUIRED" in journal,
+                        "Ordinary failure audit evidence missing")
+        for artifact in report["artifacts"]:
+            if artifact["path"].startswith("build/targets/"):
+                require(digest(project / artifact["path"]) == artifact["sha256"], "Tested source JAR changed during the run")
         report["success"] = True
         return 0
     except (OSError, ValueError, RuntimeError, TimeoutError, subprocess.SubprocessError) as exception:
-        report["failure"] = str(exception)
+        report["failure"] = str(exception).replace(str(project), "[project]").replace(str(args.java_home), "[java-home]")
         print(f"FAIL {exception}", flush=True)
         return 1
     finally:

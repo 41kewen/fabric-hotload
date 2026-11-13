@@ -1,0 +1,114 @@
+{
+  "target": "1.20.4",
+  "project_version": "0.2.0-alpha.1",
+  "minecraft": "1.20.4",
+  "loader": "0.20.1",
+  "fabric_api": "0.97.3+1.20.4",
+  "installer": "1.1.2",
+  "success": true,
+  "checks": [
+    {
+      "name": "ordinary normal startup",
+      "evidence": "[20:53:31] [Server thread/INFO]: ORDINARY loaded=true main=1 server=true ticks=1 resource=ordinary-resource-ok container=true"
+    },
+    {
+      "name": "baseline graceful stop",
+      "evidence": "process exited 0"
+    },
+    {
+      "name": "ordinary late load matches baseline functionality",
+      "evidence": "[20:54:40] [Server thread/INFO]: ORDINARY loaded=true main=1 server=true ticks=26 resource=ordinary-resource-ok container=true"
+    },
+    {
+      "name": "duplicate ordinary mod rejected",
+      "evidence": "[20:54:40] [Server thread/INFO]: HOTLOAD_REJECTED Duplicate mod id or provided alias: hotload_probe"
+    },
+    {
+      "name": "managed version switch",
+      "evidence": "[20:54:40] [Server thread/INFO]: demo-v2 ticks=1"
+    },
+    {
+      "name": "disabled module cannot dispatch",
+      "evidence": "[20:54:40] [Server thread/INFO]: HOTLOAD_REJECTED No active module: demo_counter"
+    },
+    {
+      "name": "100 server lifecycle cycles",
+      "evidence": "[20:54:55] [Server thread/INFO]: STATUS session=f7f35e82-9990-42f1-a5a4-da672e943848 pid=28588 tick=336 resources=0 dirty=false modules=[] avgTickMs=11.110037 maxTickGapMs=354.4596 ordinaryAdapter=loader-0.20.1-experimental"
+    },
+    {
+      "name": "method-body patch preserves startup Mixin",
+      "evidence": "[20:54:55] [Server thread/INFO]: BYTECODE_PATCH schema=unchanged before=original after=patched mixinDelta=2"
+    },
+    {
+      "name": "schema guard and JVM reject added field",
+      "evidence": "[20:54:55] [Server thread/INFO]: STRUCTURE_REJECTED_BY_GUARD_AND_JVM UnsupportedOperationException before=patched after=patched mixinDelta=2"
+    },
+    {
+      "name": "bytecode restoration",
+      "evidence": "[20:54:55] [Server thread/INFO]: BYTECODE_RESTORE schema=unchanged before=patched after=original mixinDelta=2"
+    },
+    {
+      "name": "hot server graceful stop",
+      "evidence": "process exited 0"
+    },
+    {
+      "name": "saved world reopens normally",
+      "evidence": "[20:55:19] [Server thread/INFO]: STATUS session=073d7449-725f-4a09-b6f9-90ff7ace9b3e pid=79424 tick=1 resources=0 dirty=false modules=[] avgTickMs=0.0 maxTickGapMs=0.0 ordinaryAdapter=loader-0.20.1-experimental"
+    },
+    {
+      "name": "ordinary initializer failure blocks further activation",
+      "evidence": "[20:56:03] [Server thread/INFO]: HOTLOAD_REJECTED DIRTY_RESTART_REQUIRED: ordinary mod activation failed | [20:56:04] [Server thread/INFO]: HOTLOAD_REJECTED DIRTY_RESTART_REQUIRED"
+    }
+  ],
+  "unverified": [
+    "online player continuity",
+    "Linux",
+    "third-party mods",
+    "arbitrary Mixin/registry additions",
+    "full JVM class unloading"
+  ],
+  "fabric_api_download_url": "https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/0.97.3+1.20.4/fabric-api-0.97.3+1.20.4.jar",
+  "artifacts": [
+    {
+      "path": "integration-tests/downloads/fabric-installer-1.1.2.jar",
+      "sha256": "61e035bf7bf70153e127440ce34de47c9036f0a2d0c65d1529454bd35ceefe4f"
+    },
+    {
+      "path": "integration-tests/downloads/fabric-api-0.97.3+1.20.4.jar",
+      "sha256": "5c11c93b21e0fbcd83dd11c6059479143f3d422bceac4153c3e55806ba9371f1"
+    },
+    {
+      "path": "integration-tests/downloads/minecraft-1.20.4.jar",
+      "sha256": "c03fa6f39daa69ddf413c965a3a83084db746a7a138ce535a693293b5472d363"
+    },
+    {
+      "path": "build/targets/1.20.4/distribution/candidates/hotload-demo-v1-0.2.0-alpha.1.jar",
+      "sha256": "d2e3bec8dc0a3d5f32562b7d8482c0080009b66d4e46d7b26382e02edba77e84"
+    },
+    {
+      "path": "build/targets/1.20.4/distribution/candidates/hotload-demo-v2-0.2.0-alpha.1.jar",
+      "sha256": "8e83a3534c9eba63d4e93a667b26a014e214f8e9736625abe62c7856f7eb13a8"
+    },
+    {
+      "path": "build/targets/1.20.4/distribution/candidates/hotload-failure-probe-0.2.0-alpha.1+mc1.20.4.jar",
+      "sha256": "e6f9636e0678e050fb627060bf108ef78e354f6443605bc8dd761f4a6bb4b5a5"
+    },
+    {
+      "path": "build/targets/1.20.4/distribution/candidates/hotload-ordinary-probe-0.2.0-alpha.1+mc1.20.4.jar",
+      "sha256": "908b92e5312e9f195807107bd8369931c36db5986d13d8914d253818fc596999"
+    },
+    {
+      "path": "build/targets/1.20.4/distribution/fabric-hotload-agent-0.2.0-alpha.1.jar",
+      "sha256": "7f7aa1fabd31cc8038fbb5f907d8d7e775ccb0a616dc7ceb9dfe3468d361f661"
+    },
+    {
+      "path": "build/targets/1.20.4/distribution/fabric-hotload-host-0.2.0-alpha.1+mc1.20.4.jar",
+      "sha256": "1d84929cce35291c470ad5fd684d2a582aacd18477d707e3139420a768054a07"
+    }
+  ],
+  "java_version": "openjdk version \"17.0.21\" 2026-10-20\r\nOpenJDK Runtime Environment Temurin-17.0.21+9 (build 17.0.21+9)\r\nOpenJDK 64-Bit Server VM Temurin-17.0.21+9 (build 17.0.21+9, mixed mode, sharing)\r\n",
+  "java_version_exit_code": 0,
+  "platform": "nt",
+  "jvm_active_processors": 4,
+  "jvm_max_heap_mb": 1024
+}

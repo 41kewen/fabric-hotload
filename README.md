@@ -1,6 +1,6 @@
-# Fabric Hotload — 26.2 P0
+# Fabric Hotload — 多版本 Fabric 服务器热加载实验
 
-一个开源的 **Fabric 专用服务器运行时加载实验项目**。当前实现技术探针与最小受管模块运行时，不是“所有 Mod 都可热重载”的生产工具。
+一个开源的 **Fabric 专用服务器运行时加载实验项目**。当前开发版本为 `0.2.0-alpha.1`，提供独立的 Minecraft 版本适配层、受管模块运行时与有限的普通 Mod 增量加载；不是“所有 Mod 都可热重载”的生产工具。
 
 源码仓库：[41kewen/fabric-hotload](https://github.com/41kewen/fabric-hotload) · [构建与单元测试](https://github.com/41kewen/fabric-hotload/actions/workflows/build.yml)
 
@@ -8,39 +8,49 @@
 
 - 候选 JAR 路径/大小/描述符检查，原始 SHA256 和按哈希保存的额外副本。
 - 受管模块：独立类加载器、宿主子命令、tick 回调、资源所有权、停用与版本切换。
-- 普通 Fabric Mod：绑定 Loader 0.20.1 的实验增量加载，保留 frozen，不重新初始化现有 Mod。
+- 普通 Fabric Mod：绑定 Loader 0.20.1 的实验增量加载，保留 frozen，不重新初始化现有 Mod；未知 Loader 关闭此能力，受管模块不因此关闭。
 - 普通 Mod 测试包不依赖受管 API；检查真实 Loader 容器、入口点、资源读取和 tick 回调。
 - 可选启动 Agent：仅修改自己的测试类中的方法体，并验证启动时已有 Mixin 保留、结构变更拒绝和字节码恢复。
 - 失败日志和脏状态；未受管副作用不能自动撤销，不伪造通用回滚。
 
-具体运行结果与未验证项见 `verification/REPORT.md` 和同目录的机器可读报告。
+多版本的实际结果与限制见 [compatibility/REPORT.md](compatibility/REPORT.md)。`verification/REPORT.md` 是首次 26.2 P0 的历史报告，不代表新版或其他版本已通过。
 
-## 固定基线
+下载：[GitHub Releases](https://github.com/41kewen/fabric-hotload/releases)。务必选择与服务器 **精确 Minecraft 版本**一致的宿主 JAR；没有列出的版本仍属未验证，不按版本区间推断兼容。
+
+## 版本基线与支持边界
 
 | 组件 | 版本 |
 | --- | --- |
-| Minecraft | 26.2 |
-| JDK | 25；开发机器使用 Oracle 25.0.4.1 |
-| Fabric Loader | **0.20.1**；内部适配严格检查该版本 |
-| Fabric API | 0.161.0+26.2 |
+| Minecraft | `compatibility/targets.json` 中的 11 个精确目标，默认 26.2 |
+| 构建 JDK | **25**；Loom/Gradle 与旧版宿主的运行 JDK 分开 |
+| 服务器 Java | 每个目标固定为 **17 / 21 / 25**，见矩阵 |
+| 公共模块 / Agent | 按 **Java 17** 编译，不引用 Minecraft |
+| Fabric Loader | 普通热加载仅适配 **0.20.1**；其他版本仅可尝试公共 API 功能 |
+| Fabric API | 每个目标固定对应版本，见 `compatibility/targets.json` |
 | Fabric Loom | 1.19.4 |
 | Gradle Wrapper | 9.8.2，固定分发包 SHA256 |
 
 首次安装宿主需要一次正常启动；不支持直接向一个未安装本项目的运行中服务器部署宿主。
 
+每个 Minecraft 目标交付独立宿主 JAR，描述符保持精确版本限制。1.x 使用官方映射并重映射到 intermediary；26.x 使用未混淆构建。项目适配多个版本不等于第三方 Mod 能跨版本，也不等于任意 Mod 都能运行时加载。
+
 ## 构建
 
-配置 `JAVA_HOME` 指向 JDK 25，再运行：
+配置 `JAVA_HOME` 指向 JDK 25，再选择一个目标运行：
 
 ```sh
-./gradlew build distribution
+./gradlew build distribution -Ptarget=26.2
+./gradlew build distribution -Ptarget=1.20.1
 ```
 
-Windows 使用 `gradlew.bat`。输出在 `build/distribution/`：
+Windows 使用 `gradlew.bat`，PowerShell 建议把参数写成 `'-Ptarget=1.20.1'`。输出在 `build/targets/<目标>/distribution/`：
 
-- `fabric-hotload-host-0.1.0-p0.jar`：宿主，放入测试服 `mods/`。
-- `fabric-hotload-agent-0.1.0-p0.jar`：可选 Agent，放在服务器目录，通过启动参数加载。
+- `fabric-hotload-host-0.2.0-alpha.1+mc<目标>.jar`：对应目标的宿主，放入测试服 `mods/`。
+- `fabric-hotload-agent-0.2.0-alpha.1.jar`：可选 Agent，放在服务器目录，通过启动参数加载，不放进 `mods/`。
 - `candidates/`：两个受管模块版本、一个普通 Fabric 测试 Mod，以及独立的初始化失败测试包。
+- `distribution.json`：构建基线与 6 个 JAR 的 SHA256；探针启动前逐项核对，拒绝跨版本或被替换的产物。
+
+初始化失败探针故意抛出异常，只能用于负向测试。不要把 `candidates/` 整体复制到 `mods/`。
 
 Agent 不重复打包 ASM，依赖 Fabric 服务器启动类路径中的 ASM。不要单独作为通用应用 Agent 使用。
 
@@ -48,10 +58,10 @@ Agent 不重复打包 ASM，依赖 Fabric 服务器启动类路径中的 ASM。�
 
 ## 安装与手动验证
 
-只在备份后的隔离测试服使用。安装正常的 Fabric 26.2 服务器、对应 Fabric API，以及宿主 JAR。
+只在备份后的隔离测试服使用。安装正常的对应版本 Fabric 服务器、矩阵中对应的 Fabric API，以及该版本的宿主 JAR。以下以 26.2 为例：
 
 ```sh
-java -javaagent:fabric-hotload-agent-0.1.0-p0.jar \
+java -javaagent:fabric-hotload-agent-0.2.0-alpha.1.jar \
   -Dhotload.experimentalMods=true -Xmx1G \
   -jar fabric-server-launch.jar nogui
 ```
@@ -60,7 +70,7 @@ java -javaagent:fabric-hotload-agent-0.1.0-p0.jar \
 
 服务器启动后把测试 JAR **复制**到 `hotmods/candidates/`，分别命名为 `demo-v1.jar`、`demo-v2.jar`、`ordinary-probe.jar`。不要把两个受管版本都放入 `mods/`。
 
-控制台命令如下；游戏内加 `/`，需要 `COMMANDS_OWNER` 权限：
+控制台命令如下；游戏内加 `/`，旧版需要数字权限级别 4，1.21.11/26.x 需要 `COMMANDS_OWNER` 权限：
 
 ```text
 hotmods status
@@ -111,10 +121,12 @@ entrypoint=example.MyModule
 
 ## 自动验证
 
-Python 3 标准库即可运行，没有额外 Python 依赖：
+Python 3.11+ 标准库即可运行，没有额外 Python 依赖：
 
 ```sh
-python integration-tests/run_probes.py --java-home /path/to/jdk-25 --accept-eula
+python -m unittest discover -s integration-tests -p 'test_*.py' -v
+python -m unittest discover -s scripts -p 'test_*.py' -v
+python integration-tests/run_probes.py --target 26.2 --java-home /path/to/jdk-25 --accept-eula
 ```
 
 `--accept-eula` 表示操作者已阅读并接受 [Minecraft EULA](https://www.minecraft.net/eula)。脚本创建新的本地隔离实例，绑定 `127.0.0.1`，不开 RCON；不会覆盖已有服务器目录。
@@ -123,12 +135,26 @@ python integration-tests/run_probes.py --java-home /path/to/jdk-25 --accept-eula
 
 验证顺序：正常启动安装普通探针 → 启动后加载同一探针 → 受管模块更新/停用及循环测试 → Agent 变换/拒绝/恢复 → 保存并重新启动同一个测试世界。
 
-当前自动验证没有真实客户端连接；不能据此宣称在线玩家必然不断线。未覆盖 Linux、真实第三方 Mod 和完整堆/类加载器回收证明。
+使用 `--loader-version 0.18.4` 可在适合该 Loader 的 Minecraft 目标上检查安全降级：普通 Mod 操作被拒绝，受管循环与字节码探针继续运行。这个检查不代表此 Loader 的普通 Mod 热加载已被适配。
 
-源码/JAR/记录打包入口为 `scripts/package_release.py`，必须传入成功的集成报告；脚本核对分发 JAR 哈希，并拒绝覆盖已有交付包：
+完整矩阵入口（JDK/JRE 路径需替换为操作者的实际路径）：
 
 ```sh
-python scripts/package_release.py --report verification/integration-20261113T054723Z.json --output /path/to/fabric-hotload-26.2-p0.zip
+python scripts/run_matrix.py --build-java-home /path/to/jdk-25 \
+  --java17-home /path/to/java-17 --java21-home /path/to/java-21 \
+  --java25-home /path/to/java-25 --cycles 100 --accept-eula
+```
+
+`--targets 26.2 1.20.1` 可只验证选定目标；`--build-only` 不启动服务器、不写 EULA。矩阵分别记录构建/单测与服务器检查状态，结果文件路径由脚本打印，原始命令与输出在忽略的 `verification/raw/` 中保留。
+
+分批运行或修复后重试可用 `scripts/summarize_matrix.py --reports <原始矩阵报告...> --output <新汇总路径>` 汇总。只采用与当前基线、分发哈希一致的成功记录，保留来源；不会删除或改写原始失败报告。
+
+当前自动验证没有真实客户端连接；不能据此宣称在线玩家必然不断线。未覆盖 Linux、真实第三方 Mod 和完整堆/类加载器回收证明。
+
+源码/JAR/公开记录打包入口为 `scripts/package_release.py`，必须传入成功的单目标集成报告或成功的服务器矩阵报告；脚本核对分发 JAR 哈希，排除原始日志、世界、依赖和工具缓存，并拒绝覆盖已有交付包：
+
+```sh
+python scripts/package_release.py --report "$REPORT" --output /path/to/fabric-hotload-multiversion.zip
 ```
 
 ## 故障恢复
@@ -142,8 +168,8 @@ Agent 的 `patch restore` 仅恢复自身测试类字节码，不是世界状态
 
 ## 许可证与后续
 
-项目采用 Apache-2.0；第三方条款见 `THIRD_PARTY_NOTICES.md`。当前是 P0 实验阶段，不分发 Minecraft 服务器。
+项目采用 Apache-2.0；第三方条款见 `THIRD_PARTY_NOTICES.md`。当前是 Alpha 实验阶段，不分发 Minecraft 服务器。
 
-GitHub Actions 在 Linux/Windows 上构建并运行单元测试，不自动接受 Minecraft EULA、不启动服务器。服务器行为验证仍以已有报告为准；CI 构建产物不能替代运行兼容性测试。
+GitHub Actions 为 11 个目标在 Linux/Windows 上构建并运行单元/边界测试，不自动接受 Minecraft EULA、不启动服务器。服务器行为验证仍以矩阵报告为准；CI 构建产物不能替代运行兼容性测试。
 
 后续优先：真实第三方服务端 Mod 兼容矩阵、事件与命令适配、状态迁移、操作窗口/性能测量。设计与阶段边界见 `DEVELOPMENT_PLAN.md`。

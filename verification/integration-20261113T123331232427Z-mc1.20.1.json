@@ -1,0 +1,59 @@
+{
+  "target": "1.20.1",
+  "project_version": "0.2.0-alpha.1",
+  "minecraft": "1.20.1",
+  "loader": "0.20.1",
+  "fabric_api": "0.92.12+1.20.1",
+  "installer": "1.1.2",
+  "success": false,
+  "checks": [],
+  "unverified": [
+    "online player continuity",
+    "Linux",
+    "third-party mods",
+    "arbitrary Mixin/registry additions",
+    "full JVM class unloading"
+  ],
+  "artifacts": [
+    {
+      "path": "integration-tests/downloads/fabric-installer-1.1.2.jar",
+      "sha256": "61e035bf7bf70153e127440ce34de47c9036f0a2d0c65d1529454bd35ceefe4f"
+    },
+    {
+      "path": "integration-tests/downloads/fabric-api-0.92.12+1.20.1.jar",
+      "sha256": "4197ff4fbdac13cffccd267c1bc59e9fbabb2b5683a9d5f8023f4b5ea16a1c1e"
+    },
+    {
+      "path": "integration-tests/downloads/minecraft-1.20.1.jar",
+      "sha256": "3af73a9dc5a102e38147946360dd27d4d70bae7055bf91cf2151cd5d121b79e0"
+    },
+    {
+      "path": "build/targets/1.20.1/distribution/candidates/hotload-demo-v1-0.2.0-alpha.1.jar",
+      "sha256": "d2e3bec8dc0a3d5f32562b7d8482c0080009b66d4e46d7b26382e02edba77e84"
+    },
+    {
+      "path": "build/targets/1.20.1/distribution/candidates/hotload-demo-v2-0.2.0-alpha.1.jar",
+      "sha256": "8e83a3534c9eba63d4e93a667b26a014e214f8e9736625abe62c7856f7eb13a8"
+    },
+    {
+      "path": "build/targets/1.20.1/distribution/candidates/hotload-failure-probe-0.2.0-alpha.1+mc1.20.1.jar",
+      "sha256": "22bd02d3d4533c27d45ce20061fff7af2dde00b8a5228786334ccca5a286b9cc"
+    },
+    {
+      "path": "build/targets/1.20.1/distribution/candidates/hotload-ordinary-probe-0.2.0-alpha.1+mc1.20.1.jar",
+      "sha256": "99f8c98f6092063e7637a3184f430c1bdbf53847b8ab94bec85481533540ca78"
+    },
+    {
+      "path": "build/targets/1.20.1/distribution/fabric-hotload-agent-0.2.0-alpha.1.jar",
+      "sha256": "7f7aa1fabd31cc8038fbb5f907d8d7e775ccb0a616dc7ceb9dfe3468d361f661"
+    },
+    {
+      "path": "build/targets/1.20.1/distribution/fabric-hotload-host-0.2.0-alpha.1+mc1.20.1.jar",
+      "sha256": "71bc2db071cb62f4df36860d88b0f6dcc13e63ec3a432be464531804b8532682"
+    }
+  ],
+  "java_version": "openjdk version \"17.0.21\" 2026-10-20\r\nOpenJDK Runtime Environment Temurin-17.0.21+9 (build 17.0.21+9)\r\nOpenJDK 64-Bit Server VM Temurin-17.0.21+9 (build 17.0.21+9, mixed mode, sharing)\r\n",
+  "java_version_exit_code": 0,
+  "platform": "nt",
+  "failure": "Server exited with 1; see [project]\\verification\\raw\\20261113T123331232427Z-mc1.20.1\\baseline-stdout.log"
+}
