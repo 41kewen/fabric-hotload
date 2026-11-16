@@ -1,0 +1,333 @@
+{
+  "schema": 1,
+  "kind": "verified-matrix-summary",
+  "generated_utc": "2026-11-16T04:19:14.644947+00:00",
+  "success": true,
+  "build_only": false,
+  "sources": [
+    "verification/matrix-20261113T122256042073Z.json",
+    "verification/matrix-20261113T123051845845Z.json",
+    "verification/matrix-20261113T123728545767Z.json",
+    "verification/matrix-20261113T124402639496Z.json",
+    "verification/matrix-20261116T041505330275Z.json"
+  ],
+  "targets": [
+    {
+      "target": "1.18.2",
+      "baseline": {
+        "minecraft": "1.18.2",
+        "java": 17,
+        "loader": "0.20.1",
+        "api": "0.77.0+1.18.2",
+        "platform": "command-v1",
+        "remap": true,
+        "api_runtime": {
+          "url": "https://cdn.modrinth.com/data/P7dR8mSH/versions/qk28POfr/fabric-api-0.77.0%2B1.18.2.jar",
+          "sha1": "d312b2846af795ee5a99b1ec290f0e023fa48338"
+        }
+      },
+      "status": "server-tested",
+      "build_exit_code": 0,
+      "build_log": "verification/raw/matrix-20261113T124402639496Z/build-1.18.2.log",
+      "unit_tests": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "distribution_check_exit_code": 0,
+      "integration_exit_code": 0,
+      "integration_report": "verification/integration-20261113T124435689099Z-mc1.18.2.json",
+      "integration_checks": 13,
+      "source_matrix": "verification/matrix-20261113T124402639496Z.json",
+      "platform": "win32"
+    },
+    {
+      "target": "1.19.2",
+      "baseline": {
+        "minecraft": "1.19.2",
+        "java": 17,
+        "loader": "0.20.1",
+        "api": "0.77.0+1.19.2",
+        "platform": "component-ms",
+        "remap": true
+      },
+      "status": "server-tested",
+      "build_exit_code": 0,
+      "build_log": "verification/raw/matrix-20261113T123728545767Z/build-1.19.2.log",
+      "unit_tests": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "distribution_check_exit_code": 0,
+      "integration_exit_code": 0,
+      "integration_report": "verification/integration-20261113T123847995003Z-mc1.19.2.json",
+      "integration_checks": 13,
+      "source_matrix": "verification/matrix-20261113T123728545767Z.json",
+      "platform": "win32"
+    },
+    {
+      "target": "1.20.1",
+      "baseline": {
+        "minecraft": "1.20.1",
+        "java": 17,
+        "loader": "0.20.1",
+        "api": "0.92.12+1.20.1",
+        "platform": "supplier-ms",
+        "remap": true
+      },
+      "status": "server-tested",
+      "build_exit_code": 0,
+      "build_log": "verification/raw/matrix-20261113T123728545767Z/build-1.20.1.log",
+      "unit_tests": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "distribution_check_exit_code": 0,
+      "integration_exit_code": 0,
+      "integration_report": "verification/integration-20261113T124324267549Z-mc1.20.1.json",
+      "integration_checks": 13,
+      "source_matrix": "verification/matrix-20261113T123728545767Z.json",
+      "platform": "win32"
+    },
+    {
+      "target": "1.20.4",
+      "baseline": {
+        "minecraft": "1.20.4",
+        "java": 17,
+        "loader": "0.20.1",
+        "api": "0.97.3+1.20.4",
+        "platform": "supplier-nanos",
+        "remap": true
+      },
+      "status": "server-tested",
+      "build_exit_code": 0,
+      "build_log": "verification/raw/matrix-20261113T123728545767Z/build-1.20.4.log",
+      "unit_tests": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "distribution_check_exit_code": 0,
+      "integration_exit_code": 0,
+      "integration_report": "verification/integration-20261113T125203827810Z-mc1.20.4.json",
+      "integration_checks": 13,
+      "source_matrix": "verification/matrix-20261113T123728545767Z.json",
+      "platform": "win32"
+    },
+    {
+      "target": "1.20.6",
+      "baseline": {
+        "minecraft": "1.20.6",
+        "java": 21,
+        "loader": "0.20.1",
+        "api": "0.100.8+1.20.6",
+        "platform": "supplier-nanos",
+        "remap": true
+      },
+      "status": "server-tested",
+      "build_exit_code": 0,
+      "build_log": "verification/raw/matrix-20261113T122256042073Z/build-1.20.6.log",
+      "unit_tests": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "integration_exit_code": 0,
+      "integration_report": "verification/integration-20261113T123727128049Z-mc1.20.6.json",
+      "integration_checks": 13,
+      "source_matrix": "verification/matrix-20261113T122256042073Z.json",
+      "platform": "win32"
+    },
+    {
+      "target": "1.21.1",
+      "baseline": {
+        "minecraft": "1.21.1",
+        "java": 21,
+        "loader": "0.20.1",
+        "api": "0.116.18+1.21.1",
+        "platform": "supplier-nanos",
+        "remap": true
+      },
+      "status": "server-tested",
+      "build_exit_code": 0,
+      "build_log": "verification/raw/matrix-20261113T123051845845Z/build-1.21.1.log",
+      "unit_tests": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "integration_exit_code": 0,
+      "integration_report": "verification/integration-20261113T123521654514Z-mc1.21.1.json",
+      "integration_checks": 13,
+      "source_matrix": "verification/matrix-20261113T123051845845Z.json",
+      "platform": "win32"
+    },
+    {
+      "target": "1.21.4",
+      "baseline": {
+        "minecraft": "1.21.4",
+        "java": 21,
+        "loader": "0.20.1",
+        "api": "0.119.4+1.21.4",
+        "platform": "supplier-nanos",
+        "remap": true
+      },
+      "status": "server-tested",
+      "build_exit_code": 0,
+      "build_log": "verification/raw/matrix-20261113T122256042073Z/build-1.21.4.log",
+      "unit_tests": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "integration_exit_code": 0,
+      "integration_report": "verification/integration-20261113T124313216458Z-mc1.21.4.json",
+      "integration_checks": 13,
+      "source_matrix": "verification/matrix-20261113T122256042073Z.json",
+      "platform": "win32"
+    },
+    {
+      "target": "1.21.11",
+      "baseline": {
+        "minecraft": "1.21.11",
+        "java": 21,
+        "loader": "0.20.1",
+        "api": "0.141.6+1.21.11",
+        "platform": "permissions-nanos",
+        "remap": true
+      },
+      "status": "server-tested",
+      "build_exit_code": 0,
+      "build_log": "verification/raw/matrix-20261113T122256042073Z/build-1.21.11.log",
+      "unit_tests": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "integration_exit_code": 0,
+      "integration_report": "verification/integration-20261113T125206953538Z-mc1.21.11.json",
+      "integration_checks": 13,
+      "source_matrix": "verification/matrix-20261113T122256042073Z.json",
+      "platform": "win32"
+    },
+    {
+      "target": "26.1",
+      "baseline": {
+        "minecraft": "26.1",
+        "java": 25,
+        "loader": "0.20.1",
+        "api": "0.145.1+26.1",
+        "platform": "permissions-nanos",
+        "remap": false
+      },
+      "status": "server-tested",
+      "build_exit_code": 0,
+      "build_log": "verification/raw/matrix-20261116T041505330275Z/build-26.1.log",
+      "unit_tests": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "distribution_check_exit_code": 0,
+      "integration_exit_code": 0,
+      "integration_report": "verification/integration-20261116T041639480685Z-mc26.1.json",
+      "integration_checks": 13,
+      "source_matrix": "verification/matrix-20261116T041505330275Z.json",
+      "platform": "win32"
+    },
+    {
+      "target": "26.1.2",
+      "baseline": {
+        "minecraft": "26.1.2",
+        "java": 25,
+        "loader": "0.20.1",
+        "api": "0.155.3+26.1.2",
+        "platform": "permissions-nanos",
+        "remap": false
+      },
+      "status": "server-tested",
+      "build_exit_code": 0,
+      "build_log": "verification/raw/matrix-20261113T122256042073Z/build-26.1.2.log",
+      "unit_tests": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "integration_exit_code": 0,
+      "integration_report": "verification/integration-20261113T125556196321Z-mc26.1.2.json",
+      "integration_checks": 13,
+      "source_matrix": "verification/matrix-20261113T122256042073Z.json",
+      "platform": "win32"
+    },
+    {
+      "target": "26.2",
+      "baseline": {
+        "minecraft": "26.2",
+        "java": 25,
+        "loader": "0.20.1",
+        "api": "0.161.0+26.2",
+        "platform": "permissions-nanos",
+        "remap": false
+      },
+      "status": "server-tested",
+      "build_exit_code": 0,
+      "build_log": "verification/raw/matrix-20261113T123728545767Z/build-26.2.log",
+      "unit_tests": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "distribution_check_exit_code": 0,
+      "integration_exit_code": 0,
+      "integration_report": "verification/integration-20261113T125621918163Z-mc26.2.json",
+      "integration_checks": 13,
+      "source_matrix": "verification/matrix-20261113T123728545767Z.json",
+      "platform": "win32"
+    },
+    {
+      "target": "26.3",
+      "baseline": {
+        "minecraft": "26.3",
+        "java": 25,
+        "loader": "0.20.1",
+        "api": "0.166.2+26.3",
+        "platform": "permissions-nanos",
+        "remap": false
+      },
+      "status": "server-tested",
+      "build_exit_code": 0,
+      "build_log": "verification/raw/matrix-20261113T122256042073Z/build-26.3.log",
+      "unit_tests": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "integration_exit_code": 0,
+      "integration_report": "verification/integration-20261113T125908361349Z-mc26.3.json",
+      "integration_checks": 13,
+      "source_matrix": "verification/matrix-20261113T122256042073Z.json",
+      "platform": "win32"
+    }
+  ],
+  "missing_targets": [],
+  "unverified": [
+    "online players",
+    "third-party mods",
+    "Linux server runtime",
+    "full JVM class unloading"
+  ]
+}

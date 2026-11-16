@@ -13,7 +13,7 @@
 - 可选启动 Agent：仅修改自己的测试类中的方法体，并验证启动时已有 Mixin 保留、结构变更拒绝和字节码恢复。
 - 失败日志和脏状态；未受管副作用不能自动撤销，不伪造通用回滚。
 
-多版本的实际结果与限制见 [compatibility/REPORT.md](compatibility/REPORT.md)。`verification/REPORT.md` 是首次 26.2 P0 的历史报告，不代表新版或其他版本已通过。
+多版本的实际结果与限制见 [compatibility/REPORT.md](compatibility/REPORT.md)，新增 **26.1 的 Windows/Linux 实测**见 [compatibility/REPORT-26.1.md](compatibility/REPORT-26.1.md)。`verification/REPORT.md` 是首次 26.2 P0 的历史报告，不代表新版或其他版本已通过。
 
 下载：[GitHub Releases](https://github.com/41kewen/fabric-hotload/releases)。务必选择与服务器 **精确 Minecraft 版本**一致的宿主 JAR；没有列出的版本仍属未验证，不按版本区间推断兼容。
 
@@ -21,7 +21,7 @@
 
 | 组件 | 版本 |
 | --- | --- |
-| Minecraft | `compatibility/targets.json` 中的 11 个精确目标，默认 26.2 |
+| Minecraft | `compatibility/targets.json` 中的 12 个精确目标（包括 26.1），默认 26.2 |
 | 构建 JDK | **25**；Loom/Gradle 与旧版宿主的运行 JDK 分开 |
 | 服务器 Java | 每个目标固定为 **17 / 21 / 25**，见矩阵 |
 | 公共模块 / Agent | 按 **Java 17** 编译，不引用 Minecraft |
@@ -40,6 +40,7 @@
 
 ```sh
 ./gradlew build distribution -Ptarget=26.2
+./gradlew build distribution -Ptarget=26.1
 ./gradlew build distribution -Ptarget=1.20.1
 ```
 
@@ -149,7 +150,7 @@ python scripts/run_matrix.py --build-java-home /path/to/jdk-25 \
 
 分批运行或修复后重试可用 `scripts/summarize_matrix.py --reports <原始矩阵报告...> --output <新汇总路径>` 汇总。只采用与当前基线、分发哈希一致的成功记录，保留来源；不会删除或改写原始失败报告。
 
-当前自动验证没有真实客户端连接；不能据此宣称在线玩家必然不断线。未覆盖 Linux、真实第三方 Mod 和完整堆/类加载器回收证明。
+当前自动验证没有真实客户端连接；不能据此宣称在线玩家必然不断线。仅 **26.1** 已在 Linux/MCSManager 中完成服务器行为验证，其他目标尚未做 Linux 服务器实测；真实第三方 Mod 和完整堆/类加载器回收证明仍未覆盖。
 
 源码/JAR/公开记录打包入口为 `scripts/package_release.py`，必须传入成功的单目标集成报告或成功的服务器矩阵报告；脚本核对分发 JAR 哈希，排除原始日志、世界、依赖和工具缓存，并拒绝覆盖已有交付包：
 
@@ -170,6 +171,6 @@ Agent 的 `patch restore` 仅恢复自身测试类字节码，不是世界状态
 
 项目采用 Apache-2.0；第三方条款见 `THIRD_PARTY_NOTICES.md`。当前是 Alpha 实验阶段，不分发 Minecraft 服务器。
 
-GitHub Actions 为 11 个目标在 Linux/Windows 上构建并运行单元/边界测试，不自动接受 Minecraft EULA、不启动服务器。服务器行为验证仍以矩阵报告为准；CI 构建产物不能替代运行兼容性测试。
+GitHub Actions 从版本配置读取 12 个目标，在 Linux/Windows 上构建并运行单元/边界测试，不自动接受 Minecraft EULA、不启动服务器。服务器行为验证仍以矩阵报告为准；CI 构建产物不能替代运行兼容性测试。
 
 后续优先：真实第三方服务端 Mod 兼容矩阵、事件与命令适配、状态迁移、操作窗口/性能测量。设计与阶段边界见 `DEVELOPMENT_PLAN.md`。

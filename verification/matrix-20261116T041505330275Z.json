@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "success": true,
+  "build_only": false,
+  "platform": "win32",
+  "targets": [
+    {
+      "target": "26.1",
+      "baseline": {
+        "minecraft": "26.1",
+        "java": 25,
+        "loader": "0.20.1",
+        "api": "0.145.1+26.1",
+        "platform": "permissions-nanos",
+        "remap": false
+      },
+      "status": "server-tested",
+      "build_exit_code": 0,
+      "build_log": "verification/raw/matrix-20261116T041505330275Z/build-26.1.log",
+      "unit_tests": {
+        "tests": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "distribution_check_exit_code": 0,
+      "integration_exit_code": 0,
+      "integration_report": "verification/integration-20261116T041639480685Z-mc26.1.json",
+      "integration_checks": 13
+    }
+  ],
+  "unverified": [
+    "online players",
+    "third-party mods",
+    "Linux server runtime"
+  ]
+}

@@ -9,6 +9,19 @@ from pathlib import Path
 from run_probes import load_target
 
 
+class DeclaredTargetTest(unittest.TestCase):
+    def test_26_1_has_its_own_exact_baseline(self) -> None:
+        project = Path(__file__).resolve().parents[1]
+        targets = json.loads((project / "compatibility/targets.json").read_text(encoding="utf-8"))["targets"]
+        target = targets["26.1"]
+        self.assertEqual(target["minecraft"], "26.1")
+        self.assertEqual(target["java"], 25)
+        self.assertEqual(target["platform"], "permissions-nanos")
+        self.assertFalse(target["remap"])
+        self.assertTrue(target["api"].endswith("+26.1"))
+        self.assertNotEqual(target["api"], targets["26.1.2"]["api"])
+
+
 class ProfileTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()

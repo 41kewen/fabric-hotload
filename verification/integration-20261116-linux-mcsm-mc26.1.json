@@ -1,0 +1,98 @@
+{
+  "schema": 1,
+  "target": "26.1",
+  "project_version": "0.2.0-alpha.1",
+  "minecraft": "26.1",
+  "loader": "0.20.1",
+  "fabric_api": "0.145.1+26.1",
+  "platform": "Linux x64 / MCSManager Docker daemon",
+  "success": true,
+  "checks": [
+    {
+      "name": "ordinary normal startup",
+      "evidence": "[04:23:23] [Server thread/INFO]: ORDINARY loaded=true main=1 server=true ticks=17 resource=ordinary-resource-ok container=true"
+    },
+    {
+      "name": "baseline graceful stop",
+      "evidence": "MCSManager reports stopped after normal stop command"
+    },
+    {
+      "name": "ordinary late load matches baseline functionality",
+      "evidence": "[04:23:37] [Server thread/INFO]: ORDINARY loaded=true main=1 server=true ticks=27 resource=ordinary-resource-ok container=true"
+    },
+    {
+      "name": "duplicate ordinary mod rejected",
+      "evidence": "[04:23:37] [Server thread/INFO]: HOTLOAD_REJECTED Duplicate mod id or provided alias: hotload_probe"
+    },
+    {
+      "name": "managed version switch",
+      "evidence": "[04:23:38] [Server thread/INFO]: demo-v2 ticks=3"
+    },
+    {
+      "name": "disabled module cannot dispatch",
+      "evidence": "[04:23:38] [Server thread/INFO]: HOTLOAD_REJECTED No active module: demo_counter"
+    },
+    {
+      "name": "100 server lifecycle cycles",
+      "evidence": "[04:24:35] [Server thread/INFO]: STATUS session=e28e9289-39d5-4a27-9f27-91c19f6dec8b pid=59714 tick=1199 resources=0 dirty=false modules=[] avgTickMs=0.401445 maxTickGapMs=62.492886 ordinaryAdapter=loader-0.20.1-experimental"
+    },
+    {
+      "name": "method-body patch preserves startup Mixin",
+      "evidence": "[04:24:36] [Server thread/INFO]: BYTECODE_PATCH schema=unchanged before=original after=patched mixinDelta=2"
+    },
+    {
+      "name": "schema guard and JVM reject added field",
+      "evidence": "[04:24:36] [Server thread/INFO]: STRUCTURE_REJECTED_BY_GUARD_AND_JVM UnsupportedOperationException before=patched after=patched mixinDelta=2"
+    },
+    {
+      "name": "bytecode restoration",
+      "evidence": "[04:24:36] [Server thread/INFO]: BYTECODE_RESTORE schema=unchanged before=patched after=original mixinDelta=2"
+    },
+    {
+      "name": "hot server graceful stop",
+      "evidence": "MCSManager reports stopped after normal stop command"
+    },
+    {
+      "name": "saved world reopens normally",
+      "evidence": "[04:24:48] [Server thread/INFO]: STATUS session=23f3ecef-7fe9-47fd-85bd-f8f8760dd946 pid=63647 tick=21 resources=0 dirty=false modules=[] avgTickMs=0.890828 maxTickGapMs=51.341382 ordinaryAdapter=loader-0.20.1-experimental"
+    },
+    {
+      "name": "ordinary initializer failure blocks further activation",
+      "evidence": "[04:24:48] [Server thread/INFO]: HOTLOAD_REJECTED DIRTY_RESTART_REQUIRED: ordinary mod activation failed | [04:24:49] [Server thread/INFO]: HOTLOAD_REJECTED DIRTY_RESTART_REQUIRED"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "build/targets/26.1/distribution/candidates/hotload-demo-v1-0.2.0-alpha.1.jar",
+      "sha256": "d2e3bec8dc0a3d5f32562b7d8482c0080009b66d4e46d7b26382e02edba77e84"
+    },
+    {
+      "path": "build/targets/26.1/distribution/candidates/hotload-demo-v2-0.2.0-alpha.1.jar",
+      "sha256": "8e83a3534c9eba63d4e93a667b26a014e214f8e9736625abe62c7856f7eb13a8"
+    },
+    {
+      "path": "build/targets/26.1/distribution/candidates/hotload-failure-probe-0.2.0-alpha.1+mc26.1.jar",
+      "sha256": "a530f715e509900e90bc60b7c5d632ac460d7e7987fffdf350a139089b585f0e"
+    },
+    {
+      "path": "build/targets/26.1/distribution/candidates/hotload-ordinary-probe-0.2.0-alpha.1+mc26.1.jar",
+      "sha256": "974216cd1068d1af329362d94405bfb5e75d44c28c2b42b71887c8017dc5124e"
+    },
+    {
+      "path": "build/targets/26.1/distribution/fabric-hotload-agent-0.2.0-alpha.1.jar",
+      "sha256": "7f7aa1fabd31cc8038fbb5f907d8d7e775ccb0a616dc7ceb9dfe3468d361f661"
+    },
+    {
+      "path": "build/targets/26.1/distribution/fabric-hotload-host-0.2.0-alpha.1+mc26.1.jar",
+      "sha256": "6aa4421008b52c5317a688d7c7dbd7ee74690ef33a98da743efc064c6054303e"
+    }
+  ],
+  "unverified": [
+    "real third-party mods",
+    "online player continuity",
+    "full JVM class unloading"
+  ],
+  "java_version": "openjdk version \"25.0.4.1\" 2026-08-18 LTS\nOpenJDK Runtime Environment Microsoft-14951822 (build 25.0.4.1+1-LTS)\nOpenJDK 64-Bit Server VM Microsoft-14951822 (build 25.0.4.1+1-LTS, mixed mode, sharing)\n",
+  "final_state": "[04:25:00] [Server thread/INFO]: STATUS session=b4131036-3751-48ac-97bb-0cfbba7b2c88 pid=63837 tick=6 resources=0 dirty=false modules=[] avgTickMs=2.259643 maxTickGapMs=50.03165 ordinaryAdapter=loader-0.20.1-experimental",
+  "final_daemon_status": 3
+}
